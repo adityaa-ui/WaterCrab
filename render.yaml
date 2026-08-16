@@ -1,0 +1,51 @@
+services:
+  # 1. Browser Rendering Service
+  - type: web
+    name: watercrab-browser
+    env: docker
+    dockerContext: ./browser-service
+    dockerfilePath: Dockerfile
+    plan: starter # Starter plan is recommended for Playwright's CPU and memory requirements
+    envVars:
+      - key: PORT
+        value: 3002
+
+  # 2. WaterCrab API Service
+  - type: web
+    name: watercrab-api
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: Dockerfile.api
+    plan: free
+    ports:
+      - port: 3001
+        protocol: http
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: BROWSER_SERVICE_URL
+        value: http://watercrab-browser:3002
+      - key: REDIS_URL
+        fromRedis:
+          name: watercrab-redis
+          property: connectionString
+
+  # 3. WaterCrab Background Worker
+  - type: worker
+    name: watercrab-worker
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: Dockerfile.worker
+    plan: free
+    envVars:
+      - key: BROWSER_SERVICE_URL
+        value: http://watercrab-browser:3002
+      - key: REDIS_URL
+        fromRedis:
+          name: watercrab-redis
+          property: connectionString
+
+redis:
+  - name: watercrab-redis
+    plan: free
+    ipAllowList: [] # Access restricted internally only for safety
