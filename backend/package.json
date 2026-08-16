@@ -1,0 +1,25 @@
+{
+  "name": "watercrab-backend",
+  "version": "1.0.0",
+  "description": "Backend API for WaterCrab scraping and structured extraction",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1",
+    "@mozilla/readability": "^0.5.0",
+    "bullmq": "^6.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ioredis": "^6.0.0",
+    "jsdom": "^24.1.0",
+    "openai": "^7.4.0",
+    "turndown": "^7.2.0",
+    "uuid": "^14.0.1"
+  }
+}
