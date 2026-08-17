@@ -119,19 +119,19 @@ export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onL
               >
                 <div className="space-y-4">
                   <div>
-                    <a href="#docs" className="block group">
+                    <a href="#pipeline" className="block group">
                       <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">Quick Start</div>
                       <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Get started with WaterCrab API keys in 2 minutes.</div>
                     </a>
                   </div>
                   <div>
-                    <a href="#docs" className="block group">
+                    <a href="#features" className="block group">
                       <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">API Reference</div>
                       <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Scraping, crawling, and extraction endpoints.</div>
                     </a>
                   </div>
                   <div>
-                    <a href="#docs" className="block group">
+                    <a href="#integrations" className="block group">
                       <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">SDK Libraries</div>
                       <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">TypeScript, Python, and Go developer libraries.</div>
                     </a>
@@ -140,7 +140,6 @@ export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onL
               </div>
             </div>
 
-            <a href="#blog" className="transition hover:text-[var(--color-charcoal)]">Blog</a>
           </nav>
 
           {/* Right buttons */}
