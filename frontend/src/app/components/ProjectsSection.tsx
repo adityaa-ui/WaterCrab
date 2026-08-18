@@ -13,7 +13,7 @@ export default function ProjectsSection() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <section className="mx-auto max-w-[1200px] py-16 md:py-24 grid gap-12 lg:grid-cols-12 items-center border-t border-[var(--color-stone-mist)]">
+    <section id="solutions" className="mx-auto max-w-[1200px] py-16 md:py-24 grid gap-12 lg:grid-cols-12 items-center border-t border-[var(--color-stone-mist)]">
       {/* Left side description */}
       <div className="lg:col-span-5 space-y-6">
         {/* Section Label Tag: Geist Mono 12px, 0.10em tracking, bark-grey */}

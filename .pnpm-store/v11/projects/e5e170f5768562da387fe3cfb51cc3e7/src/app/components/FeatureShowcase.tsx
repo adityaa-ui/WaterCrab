@@ -4,10 +4,6 @@ import React, { useState } from 'react';
 // --- DATA DEFINITIONS ---
 
 // Section 1: Structured Scraping
-interface CodeSample {
-  [language: string]: string;
-}
-
 interface AccordionItem {
   id: string;
   title: string;
@@ -103,11 +99,23 @@ mcp.StartStdioServer(watercrabTools)`
 ];
 
 // Section 2: Crawl Pipelines
+interface CrawlPage {
+  url: string;
+  status: string;
+  size: string;
+}
+
+type CrawlWidgetState =
+  | { activeTab: 'crawler'; pages: CrawlPage[] }
+  | { activeTab: 'robots'; directives: Array<Record<string, string>> }
+  | { activeTab: 'filters'; exclusions: string[] }
+  | { activeTab: 'logs'; logLines: string[] };
+
 interface CrawlItem {
   id: string;
   title: string;
   description: string;
-  widgetState: any;
+  widgetState: CrawlWidgetState;
 }
 
 const SECTION_2_ITEMS: CrawlItem[] = [
@@ -233,7 +241,7 @@ export default function FeatureShowcase() {
         <div className="lg:col-span-5 space-y-6">
           <div className="flex items-center gap-1.5 font-mono text-[12px] font-semibold tracking-[0.10em] text-[var(--color-bark-grey)] uppercase">
             <span>[ SECTION #01 ]</span>
-            <span className="text-[var(--color-pebble)]">// STRUCTURED SCRAPING</span>
+            <span className="text-[var(--color-pebble)]">{'// STRUCTURED SCRAPING'}</span>
           </div>
 
           <h2 className="display-serif text-3xl font-bold leading-tight text-[var(--color-charcoal)] md:text-4xl">
@@ -313,7 +321,7 @@ export default function FeatureShowcase() {
         <div className="lg:col-span-5 space-y-6 lg:order-last">
           <div className="flex items-center gap-1.5 font-mono text-[12px] font-semibold tracking-[0.10em] text-[var(--color-bark-grey)] uppercase">
             <span>[ SECTION #02 ]</span>
-            <span className="text-[var(--color-pebble)]">// CRAWL PIPELINES</span>
+            <span className="text-[var(--color-pebble)]">{'// CRAWL PIPELINES'}</span>
           </div>
 
           <h2 className="display-serif text-3xl font-bold leading-tight text-[var(--color-charcoal)] md:text-4xl">
@@ -368,7 +376,7 @@ export default function FeatureShowcase() {
             <div className="flex-1 flex flex-col justify-center">
               {sec2Data.widgetState.activeTab === 'crawler' && (
                 <div className="space-y-2 animate-fadeIn">
-                  {sec2Data.widgetState.pages.map((p: any) => (
+                  {sec2Data.widgetState.pages.map((p) => (
                     <div key={p.url} className="flex items-center justify-between rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-4 py-2 text-xs">
                       <div className="flex items-center gap-2">
                         <span className={`h-1.5 w-1.5 rounded-full ${p.status === 'completed' ? 'bg-green-500' : p.status === 'active' ? 'bg-[var(--color-electric-indigo)] animate-pulse' : 'bg-zinc-300'}`} />
@@ -435,7 +443,7 @@ export default function FeatureShowcase() {
         <div className="lg:col-span-5 space-y-6">
           <div className="flex items-center gap-1.5 font-mono text-[12px] font-semibold tracking-[0.10em] text-[var(--color-bark-grey)] uppercase">
             <span>[ SECTION #03 ]</span>
-            <span className="text-[var(--color-pebble)]">// AI EXTRACTION</span>
+            <span className="text-[var(--color-pebble)]">{'// AI EXTRACTION'}</span>
           </div>
 
           <h2 className="display-serif text-3xl font-bold leading-tight text-[var(--color-charcoal)] md:text-4xl">

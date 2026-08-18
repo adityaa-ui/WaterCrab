@@ -79,7 +79,7 @@ export default function FeatureGrid() {
             <div className="mt-6 border-t border-[var(--color-stone-mist)] pt-4 flex justify-between items-center">
               <span className="text-[10px] font-mono text-[var(--color-pebble)]">DOCS_VERSION v1.0</span>
               <a
-                href="#docs"
+                href="#features"
                 className="inline-flex items-center gap-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.04em] text-[var(--color-charcoal)] hover:opacity-60 transition-opacity"
               >
                 Docs

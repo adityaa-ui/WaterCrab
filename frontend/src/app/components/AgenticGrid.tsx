@@ -14,7 +14,7 @@ const AGENTS = [
 
 export default function AgenticGrid() {
   return (
-    <section className="mx-auto max-w-[1200px] py-16 md:py-24 border-t border-[var(--color-stone-mist)]">
+    <section id="integrations" className="mx-auto max-w-[1200px] py-16 md:py-24 border-t border-[var(--color-stone-mist)]">
       <div className="mb-12 text-center">
         {/* Section Label Tag: Geist Mono 12px weight 500-600, 0.10em tracking, bark-grey */}
         <div className="font-mono text-[12px] font-medium uppercase tracking-[0.10em] text-[var(--color-bark-grey)]">

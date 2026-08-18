@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { ThemeToggle } from '@/lib/theme';
 
 export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onLogin: () => void; onSignUp: () => void; userEmail?: string; onLogout: () => void }) {
   const [openDropdown, setOpenDropdown] = useState<'solutions' | 'docs' | null>(null);
@@ -11,7 +12,7 @@ export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onL
   return (
     <>
       {/* Sticky Nav Bar: Stays completely flat, no border, no shadow, no background change */}
-      <header className="sticky top-0 z-40 bg-[rgba(250,250,249,0.85)] backdrop-blur-md w-full">
+      <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-header-glass)] backdrop-blur-md w-full">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 relative">
           
           {/* Left branding */}
@@ -119,19 +120,19 @@ export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onL
               >
                 <div className="space-y-4">
                   <div>
-                    <a href="#docs" className="block group">
+                    <a href="#pipeline" className="block group">
                       <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">Quick Start</div>
                       <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Get started with WaterCrab API keys in 2 minutes.</div>
                     </a>
                   </div>
                   <div>
-                    <a href="#docs" className="block group">
+                    <a href="#features" className="block group">
                       <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">API Reference</div>
                       <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Scraping, crawling, and extraction endpoints.</div>
                     </a>
                   </div>
                   <div>
-                    <a href="#docs" className="block group">
+                    <a href="#integrations" className="block group">
                       <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">SDK Libraries</div>
                       <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">TypeScript, Python, and Go developer libraries.</div>
                     </a>
@@ -140,11 +141,11 @@ export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onL
               </div>
             </div>
 
-            <a href="#blog" className="transition hover:text-[var(--color-charcoal)]">Blog</a>
           </nav>
 
           {/* Right buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <ThemeToggle className="hidden sm:inline-flex" />
             {userEmail ? <><a href="/workspace" className="hidden text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--color-charcoal)] hover:opacity-75 md:block">Workspace</a><span className="hidden max-w-32 truncate text-xs text-[var(--color-bark-grey)] md:block">{userEmail}</span><button onClick={onLogout} className="rounded-[8px] border border-[var(--color-stone-mist)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.04em] hover:border-[var(--color-electric-indigo)]">Log out</button></> : <><button onClick={onLogin} className="text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--color-charcoal)] hover:opacity-75 transition cursor-pointer">Log in</button><button onClick={onSignUp} className="rounded-[8px] bg-[var(--color-electric-indigo)] px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[var(--color-deep-violet)] cursor-pointer">Sign up</button></>}
           </div>
         </div>

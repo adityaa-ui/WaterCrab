@@ -1,64 +1,107 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { downloadText } from "@/lib/download";
+import { CheckIcon, CopyIcon, DownloadIcon } from "@/lib/icons";
+import { slugify } from "@/lib/text";
 
-interface ScrapeResultProps {
+export interface ScrapeResultProps {
+  url: string;
   title: string;
   excerpt?: string;
   markdown: string;
-  activeTab: 'preview' | 'markdown';
-  setActiveTab: (tab: 'preview' | 'markdown') => void;
+  activeTab: "preview" | "markdown";
+  onSetTab: (tab: "preview" | "markdown") => void;
   onCopy: (text: string) => void;
   copied: boolean;
 }
 
-const ScrapeResult: React.FC<ScrapeResultProps> = ({ title, excerpt, markdown, activeTab, setActiveTab, onCopy, copied }) => (
-  <div className="flex-1 flex flex-col bg-card-bg border border-card-border rounded-2xl overflow-hidden shadow-2xl">
-    <div className="px-5 py-3 border-b border-card-border bg-[#0a0d15] flex items-center justify-between">
-      <div className="flex items-center space-x-2">
-        <span className="text-xs font-semibold text-white truncate max-w-xs">{title}</span>
-        <span className="text-[9px] bg-accent/15 text-accent px-1.5 py-0.5 rounded font-bold uppercase">Scraped</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <div className="flex bg-[#111622] rounded-lg p-0.5 border border-card-border">
-          <button
-            onClick={() => setActiveTab('preview')}
-            className={`px-3 py-1 text-[10px] font-semibold rounded-md transition ${activeTab === 'preview' ? 'bg-accent text-white' : 'text-gray-400 hover:text-white'}`}
-          >
-            Preview
-          </button>
-          <button
-            onClick={() => setActiveTab('markdown')}
-            className={`px-3 py-1 text-[10px] font-semibold rounded-md transition ${activeTab === 'markdown' ? 'bg-accent text-white' : 'text-gray-400 hover:text-white'}`}
-          >
-            Markdown
-          </button>
-        </div>
-        <button
-          onClick={() => onCopy(markdown)}
-          className="p-1.5 rounded-lg border border-card-border hover:bg-gray-800 text-gray-400 hover:text-white transition"
-          title="Copy Markdown"
-        >
-          {copied ? (
-            <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-          ) : (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-          )}
-        </button>
-      </div>
-    </div>
-    <div className="flex-1 p-5 overflow-auto max-h-[500px]">
-      {activeTab === 'markdown' ? (
-        <pre className="text-xs font-mono text-gray-300 whitespace-pre-wrap selection:bg-accent/30">{markdown}</pre>
-      ) : (
-        <div className="prose prose-invert prose-xs text-gray-300 max-w-none">
-          <h2 className="text-lg font-bold text-white mb-2">{title}</h2>
-          {excerpt && (
-            <blockquote className="border-l-2 border-accent pl-3 text-gray-400 text-xs italic mb-4">{excerpt}</blockquote>
-          )}
-          <div className="whitespace-pre-line text-sm leading-relaxed">{markdown}</div>
-        </div>
-      )}
-    </div>
-  </div>
-);
+export default function ScrapeResult({
+  url,
+  title,
+  excerpt,
+  markdown,
+  activeTab,
+  onSetTab,
+  onCopy,
+  copied
+}: ScrapeResultProps) {
+  const tabs: Array<"preview" | "markdown"> = ["preview", "markdown"];
 
-export default ScrapeResult;
+  return (
+    <div className="animate-fadeIn flex min-h-[420px] flex-1 flex-col overflow-hidden rounded-[18px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] shadow-[0_16px_40px_rgba(41,37,36,0.08)]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-5 py-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="hidden shrink-0 rounded bg-[var(--color-electric-indigo)]/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-electric-indigo)] sm:inline-block">
+            Scraped
+          </span>
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            title={url}
+            className="max-w-[220px] truncate font-mono text-xs text-[var(--color-sapphire-link)] hover:underline"
+          >
+            {url}
+          </a>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-0.5">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => onSetTab(tab)}
+                className={`rounded-md px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition ${
+                  activeTab === tab
+                    ? "bg-[var(--color-electric-indigo)] text-white"
+                    : "text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)]"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onCopy(markdown)}
+            title="Copy Markdown"
+            className="rounded-lg border border-[var(--color-stone-mist)] p-1.5 text-[var(--color-bark-grey)] transition hover:border-[var(--color-electric-indigo)] hover:text-[var(--color-charcoal)]"
+          >
+            {copied ? <CheckIcon className="text-[var(--color-lichen-green)]" /> : <CopyIcon />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => downloadText(`${slugify(title)}.md`, markdown)}
+            title="Download Markdown"
+            className="rounded-lg border border-[var(--color-stone-mist)] p-1.5 text-[var(--color-bark-grey)] transition hover:border-[var(--color-electric-indigo)] hover:text-[var(--color-charcoal)]"
+          >
+            <DownloadIcon />
+          </button>
+        </div>
+      </div>
+
+      <div className="max-h-[520px] flex-1 overflow-auto p-5">
+        {activeTab === "markdown" ? (
+          <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+            {markdown}
+          </pre>
+        ) : (
+          <article>
+            <h2 className="font-serif text-lg font-semibold text-[var(--color-charcoal)]">{title}</h2>
+            {excerpt && (
+              <blockquote className="mt-2 border-l-2 border-[var(--color-electric-indigo)] pl-3 text-xs italic text-[var(--color-bark-grey)]">
+                {excerpt}
+              </blockquote>
+            )}
+            <div className="mt-4 whitespace-pre-line text-sm leading-relaxed text-[var(--color-charcoal)]">
+              {markdown}
+            </div>
+          </article>
+        )}
+      </div>
+    </div>
+  );
+}

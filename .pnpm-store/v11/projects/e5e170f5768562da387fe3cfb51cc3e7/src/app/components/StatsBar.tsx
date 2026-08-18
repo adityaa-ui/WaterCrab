@@ -10,7 +10,7 @@ const stats = [
 
 export default function StatsBar() {
   return (
-    <section className="w-full bg-[var(--color-paper-white)] border-t border-b border-[var(--color-stone-mist)]">
+    <section id="stats" className="w-full bg-[var(--color-paper-white)] border-t border-b border-[var(--color-stone-mist)]">
       <div className="mx-auto max-w-[1200px] grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[var(--color-stone-mist)]">
         {stats.map((stat) => (
           <div 

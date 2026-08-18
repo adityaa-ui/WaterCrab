@@ -1,282 +1,462 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import ConfigPanel from './ConfigPanel';
-import EmptyState from './EmptyState';
-import LoadingPanel from './LoadingPanel';
-import ScrapeResult from './ScrapeResult';
-import ExtractResult from './ExtractResult';
-import CrawlResult from './CrawlResult';
+import React, { useEffect, useRef, useState } from "react";
+import ConfigPanel from "./ConfigPanel";
+import ExtractResult from "./ExtractResult";
+import CrawlResult from "./CrawlResult";
+import ResultEmpty from "./results/ResultEmpty";
+import ResultError from "./results/ResultError";
+import ResultLoading from "./results/ResultLoading";
+import ResultWorkspace from "./results/ResultWorkspace";
+import {
+  DEFAULT_API_URL,
+  createCrawlJob,
+  mapCrawlStatus,
+  normalizeUrl,
+  pollCrawlJob,
+  validateUrl
+} from "@/lib/jobs";
+import { BotIcon, CrawlIcon, GlobeIcon, MapIcon, SearchIcon, SparkIcon } from "@/lib/icons";
+import type {
+  CrawlJob,
+  ExtractResponse,
+  PipelineMode,
+  ScrapeData,
+  ScrapeResponse
+} from "@/lib/types";
 
-const SCHEMA_TEMPLATES = {
-  product: {
-    type: 'object',
-    properties: {
-      name: { type: 'string', description: 'The name of the product' },
-      price: { type: 'string', description: 'The price of the product' },
-      description: { type: 'string', description: 'Product description' },
-      rating: { type: 'string', description: 'Rating or review score' }
+const SCHEMA_TEMPLATES: Record<"product" | "article" | "custom", string> = {
+  product: JSON.stringify(
+    {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "The name of the product" },
+        price: { type: "string", description: "The price of the product" },
+        description: { type: "string", description: "Product description" },
+        rating: { type: "string", description: "Rating or review score" }
+      },
+      required: ["name", "price"]
     },
-    required: ['name', 'price']
-  },
-  article: {
-    type: 'object',
-    properties: {
-      title: { type: 'string', description: 'Title of the article' },
-      author: { type: 'string', description: 'Author name' },
-      publishDate: { type: 'string', description: 'Date of publication' },
-      summary: { type: 'string', description: '1-2 sentence summary of article' }
+    null,
+    2
+  ),
+  article: JSON.stringify(
+    {
+      type: "object",
+      properties: {
+        title: { type: "string", description: "Title of the article" },
+        author: { type: "string", description: "Author name" },
+        publishDate: { type: "string", description: "Date of publication" },
+        summary: { type: "string", description: "1-2 sentence summary of article" }
+      },
+      required: ["title"]
     },
-    required: ['title']
-  },
-  custom: {
-    type: 'object',
-    properties: {
-      key: { type: 'string', description: 'Description of what to extract' }
+    null,
+    2
+  ),
+  custom: JSON.stringify(
+    {
+      type: "object",
+      properties: {
+        key: { type: "string", description: "Description of what to extract" }
+      },
+      required: ["key"]
     },
-    required: ['key']
-  }
+    null,
+    2
+  )
 };
 
-interface PipelineToolProps {
-  apiUrl: string;
-  showConfig: boolean;
-  setShowConfig: (show: boolean) => void;
-  setApiUrl: (url: string) => void;
+type SchemaTemplateKey = keyof typeof SCHEMA_TEMPLATES;
+
+/** Human-friendly titles used by the premium result error state. */
+const ERROR_TITLES: Record<"scrape" | "extract" | "crawl", string> = {
+  scrape: "Scrape failed",
+  extract: "Extraction failed",
+  crawl: "Crawl failed"
+};
+
+interface Affordance {
+  id: string;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+  available: boolean;
 }
 
-export default function PipelineTool({ apiUrl, showConfig, setApiUrl, setShowConfig }: PipelineToolProps) {
-  const [url, setUrl] = useState('');
-  const [mode, setMode] = useState<'scrape' | 'crawl'>('scrape');
+const AFFORDANCES: Affordance[] = [
+  { id: "scrape", label: "Scrape", description: "Single-page clean Markdown", icon: <GlobeIcon />, available: true },
+  { id: "extract", label: "Extract", description: "Structured JSON from a page", icon: <SparkIcon />, available: true },
+  { id: "crawl", label: "Crawl", description: "Multi-page crawl with live progress", icon: <CrawlIcon />, available: true },
+  { id: "map", label: "Map", description: "Site structure & link topology", icon: <MapIcon />, available: false },
+  { id: "search", label: "Search", description: "Web search over the index", icon: <SearchIcon />, available: false },
+  { id: "interact", label: "Interact", description: "Conversational page Q&A", icon: <BotIcon />, available: false }
+];
+
+export interface PipelineToolProps {
+  initialUrl?: string;
+  /** Render without the marketing section header + padding so the tool can
+      be embedded inside the authenticated workspace shell. */
+  bare?: boolean;
+  initialMode?: "scrape" | "crawl";
+  initialExtract?: boolean;
+}
+
+export default function PipelineTool({ initialUrl, bare = false, initialMode = "scrape", initialExtract = false }: PipelineToolProps) {
+  const [apiUrl, setApiUrl] = useState(DEFAULT_API_URL);
+  const [showConfig, setShowConfig] = useState(false);
+
+  const [url, setUrl] = useState(initialUrl ?? "");
+  const [mode, setMode] = useState<"scrape" | "crawl">(initialMode);
   const [maxPages, setMaxPages] = useState(3);
-  const [structuredExtract, setStructuredExtract] = useState(false);
-  const [provider, setProvider] = useState<'openai' | 'anthropic'>('openai');
-  const [apiKey, setApiKey] = useState('');
-  const [schemaTemplate, setSchemaTemplate] = useState<'product' | 'article' | 'custom'>('product');
-  const [schemaJson, setSchemaJson] = useState(JSON.stringify(SCHEMA_TEMPLATES.product, null, 2));
+  const [structuredExtract, setStructuredExtract] = useState(initialExtract);
+  const [schemaTemplate, setSchemaTemplate] = useState<SchemaTemplateKey>("product");
+  const [schemaJson, setSchemaJson] = useState(SCHEMA_TEMPLATES.product);
+  const [provider, setProvider] = useState<"openai" | "anthropic">("openai");
+  const [apiKey, setApiKey] = useState("");
   const [showKey, setShowKey] = useState(false);
+
   const [loading, setLoading] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState('');
+  const [loadingStatus, setLoadingStatus] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [resultType, setResultType] = useState<'scrape' | 'extract' | 'crawl' | null>(null);
-  
-  const [scrapeResult, setScrapeResult] = useState<{ title: string; excerpt?: string; markdown: string } | null>(null);
-  const [extractResult, setExtractResult] = useState<Record<string, any> | null>(null);
-  const [crawlResult, setCrawlResult] = useState<{
-    id: string;
-    status: string;
-    progress: { current: number; total: number };
-    results: Array<{ url: string; title: string; markdown: string }>;
-    error?: string;
-  } | null>(null);
-  
-  const [activeScrapeTab, setActiveScrapeTab] = useState<'preview' | 'markdown'>('preview');
+  const [resultType, setResultType] = useState<PipelineMode | null>(null);
+
+  const [scrapeResult, setScrapeResult] = useState<ScrapeData | null>(null);
+  const [extractResult, setExtractResult] = useState<Record<string, unknown> | null>(null);
+  const [crawlJob, setCrawlJob] = useState<CrawlJob | null>(null);
+
   const [selectedCrawlPage, setSelectedCrawlPage] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [lastOp, setLastOp] = useState<"scrape" | "extract" | "crawl">("scrape");
 
+  const stopPollRef = useRef<(() => void) | null>(null);
+  const copyTimerRef = useRef<number | null>(null);
+  const retryRef = useRef<(() => void) | null>(null);
+  const urlInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Clean up polling + copy timers on unmount (no state updates happen here).
   useEffect(() => {
-    setSchemaJson(JSON.stringify(SCHEMA_TEMPLATES[schemaTemplate], null, 2));
-  }, [schemaTemplate]);
+    return () => {
+      stopPollRef.current?.();
+      if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
+    };
+  }, []);
+
+  const handleTemplateChange = (template: SchemaTemplateKey) => {
+    setSchemaTemplate(template);
+    setSchemaJson(SCHEMA_TEMPLATES[template]);
+  };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (copyTimerRef.current) window.clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = window.setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleScrape = async () => {
+  const runScrape = async (targetUrl: string) => {
+    retryRef.current = () => void runScrape(targetUrl);
+    setLastOp("scrape");
     setLoading(true);
-    setLoadingStatus('Initializing browser connection...');
+    setLoadingStatus("Rendering page with the headless browser…");
     setError(null);
     setScrapeResult(null);
-    setResultType(null);
+    setExtractResult(null);
+    setCrawlJob(null);
+    setResultType("scrape");
+    setSelectedCrawlPage(null);
 
     try {
-      setLoadingStatus('Rendering page content using headless browser...');
       const res = await fetch(`${apiUrl}/scrape`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: normalizeUrl(targetUrl) })
       });
-
-      const data = await res.json();
+      const data = (await res.json()) as ScrapeResponse;
       if (!res.ok || !data.success) {
-        throw new Error(data.error || `Scrape failed with status ${res.status}`);
+        throw new Error(data.error || `Scrape failed (${res.status}).`);
       }
-
-      setScrapeResult(data);
-      setResultType('scrape');
-    } catch (err: any) {
-      setError(err.message || 'An unexpected scraping error occurred.');
+      setScrapeResult({
+        url: normalizeUrl(targetUrl),
+        title: data.title || targetUrl,
+        excerpt: data.excerpt,
+        markdown: data.markdown || ""
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected scraping error occurred.");
     } finally {
       setLoading(false);
+      setLoadingStatus("");
     }
   };
 
-  const handleExtract = async () => {
+  const runExtract = async (targetUrl: string) => {
+    retryRef.current = () => void runExtract(targetUrl);
+    setLastOp("extract");
     setLoading(true);
-    setLoadingStatus('Validating extraction criteria...');
+    setLoadingStatus("Instructing the model to extract fields…");
     setError(null);
     setExtractResult(null);
-    setResultType(null);
+    setScrapeResult(null);
+    setCrawlJob(null);
+    setResultType("extract");
+    setSelectedCrawlPage(null);
 
-    let parsedSchema;
+    let parsedSchema: unknown;
     try {
       parsedSchema = JSON.parse(schemaJson);
     } catch {
-      setError('Invalid JSON Schema format. Please fix syntax errors before extracting.');
+      setError("Invalid JSON schema — fix the syntax before extracting.");
       setLoading(false);
+      setLoadingStatus("");
       return;
     }
 
     try {
-      setLoadingStatus('Instructing browser service to fetch HTML...');
       const res = await fetch(`${apiUrl}/extract`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          url,
+          url: normalizeUrl(targetUrl),
           schema: parsedSchema,
           provider,
           apiKey
         })
       });
-
-      const data = await res.json();
+      const data = (await res.json()) as ExtractResponse;
       if (!res.ok || !data.success) {
-        throw new Error(data.error || `Extraction failed with status ${res.status}`);
+        throw new Error(data.error || `Extraction failed (${res.status}).`);
       }
-
-      setExtractResult(data.data);
-      setResultType('extract');
-    } catch (err: any) {
-      setError(err.message || 'An unexpected structured extraction error occurred.');
+      setExtractResult(data.data ?? {});
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected extraction error occurred.");
     } finally {
       setLoading(false);
+      setLoadingStatus("");
     }
   };
 
-  const handleCrawl = async () => {
+  const runCrawl = async (targetUrl: string) => {
+    retryRef.current = () => void runCrawl(targetUrl);
+    setLastOp("crawl");
     setLoading(true);
-    setLoadingStatus('Registering crawler task...');
+    setLoadingStatus("Queueing crawl job…");
     setError(null);
-    setCrawlResult(null);
-    setResultType(null);
+    setCrawlJob(null);
+    setScrapeResult(null);
+    setExtractResult(null);
+    setResultType("crawl");
     setSelectedCrawlPage(null);
 
     try {
-      const startRes = await fetch(`${apiUrl}/crawl`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, maxPages })
-      });
-
-      const startData = await startRes.json();
-      if (!startRes.ok || !startData.success) {
-        throw new Error(startData.error || 'Failed to queue crawl job.');
-      }
-
-      const jobId = startData.jobId;
-      setLoadingStatus(`Crawl enqueued. Job ID: ${jobId}`);
-
-      const pollInterval = setInterval(async () => {
-        try {
-          const pollRes = await fetch(`${apiUrl}/jobs/${jobId}`);
-          const pollData = await pollRes.json();
-
-          if (!pollRes.ok || !pollData.success) {
-            throw new Error(pollData.error || 'Failed to poll status.');
+      const jobId = await createCrawlJob(targetUrl, maxPages, apiUrl);
+      stopPollRef.current?.();
+      stopPollRef.current = pollCrawlJob({
+        jobId,
+        apiUrl,
+        intervalMs: 1500,
+        onJob: (job) => {
+          setCrawlJob(job);
+          setResultType("crawl");
+          const status = mapCrawlStatus(job.status);
+          if (status === "queued") {
+            setLoadingStatus("Queued — starting shortly…");
+          } else if (status === "running") {
+            setLoadingStatus(
+              job.progress && job.progress.total > 0
+                ? `Crawling… ${job.progress.current} of ${job.progress.total} pages`
+                : "Crawling…"
+            );
           }
-
-          const job = pollData.job;
-          setCrawlResult(job);
-          setResultType('crawl');
-
-          if (job.status === 'active') {
-            setLoadingStatus(`Crawling pages: ${job.progress.current} of ${job.progress.total} parsed.`);
-          } else if (job.status === 'completed') {
-            clearInterval(pollInterval);
-            setLoading(false);
-          } else if (job.status === 'failed') {
-            clearInterval(pollInterval);
-            setError(job.error || 'The crawl background job failed.');
-            setLoading(false);
-          }
-        } catch (pollErr: any) {
-          clearInterval(pollInterval);
-          setError(`Polling error: ${pollErr.message}`);
+        },
+        onTerminal: (job) => {
+          setCrawlJob(job);
+          setResultType("crawl");
+          setSelectedCrawlPage(job.results && job.results.length > 0 ? 0 : null);
           setLoading(false);
+          setLoadingStatus("");
+          if (mapCrawlStatus(job.status) === "failed") {
+            setError(job.error || "The crawl failed to complete.");
+          }
+        },
+        onError: (pollErr) => {
+          setError(`Could not poll the crawl job: ${pollErr.message}`);
+          setLoading(false);
+          setLoadingStatus("");
         }
-      }, 1500);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected crawling error occurred.');
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to start the crawl.");
       setLoading(false);
+      setLoadingStatus("");
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
-
+    const urlError = validateUrl(url);
+    if (urlError) {
+      setError(urlError);
+      return;
+    }
     if (structuredExtract) {
-      handleExtract();
-    } else if (mode === 'scrape') {
-      handleScrape();
+      void runExtract(url);
+    } else if (mode === "crawl") {
+      void runCrawl(url);
     } else {
-      handleCrawl();
+      void runScrape(url);
     }
   };
 
+  const selectAffordance = (aff: Affordance) => {
+    if (aff.id === "extract") {
+      setStructuredExtract(true);
+    } else if (aff.id === "crawl") {
+      setStructuredExtract(false);
+      setMode("crawl");
+    } else if (aff.id === "scrape") {
+      setStructuredExtract(false);
+      setMode("scrape");
+    }
+  };
+
+  const scrollToForm = () => {
+    document.getElementById("pipeline")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  /** Clears the current result and returns to the form for a fresh run. */
+  const handleNewScrape = () => {
+    stopPollRef.current?.();
+    setUrl("");
+    setError(null);
+    setScrapeResult(null);
+    setExtractResult(null);
+    setCrawlJob(null);
+    setResultType(null);
+    setSelectedCrawlPage(null);
+    scrollToForm();
+    urlInputRef.current?.focus();
+  };
+
+  /** Prefills the target URL and focuses the form without running anything. */
+  const handleOpenInPipeline = (targetUrl: string) => {
+    setUrl(targetUrl);
+    setError(null);
+    scrollToForm();
+    urlInputRef.current?.focus();
+  };
+
+  /** Hands a finished scrape to the Extract phase: enables the schema builder
+      and pre-fills the URL so extraction can be run immediately. */
+  const startExtractFromResult = (targetUrl: string) => {
+    setUrl(targetUrl);
+    setStructuredExtract(true);
+    setMode("scrape");
+    setError(null);
+    scrollToForm();
+    urlInputRef.current?.focus();
+  };
+
+  const startCrawlFromResult = (targetUrl: string) => {
+    setUrl(targetUrl);
+    setStructuredExtract(false);
+    setMode("crawl");
+    setError(null);
+    scrollToForm();
+    urlInputRef.current?.focus();
+  };
+
+  const crawlCompleted = crawlJob ? mapCrawlStatus(crawlJob.status) === "completed" : false;
+
   return (
-    <section id="pipeline" className="pb-16 pt-8 scroll-mt-20">
-      <div className="mb-10 text-center">
-        <span className="font-mono text-xs font-semibold uppercase tracking-[0.10em] text-[var(--color-bark-grey)]">
-          Launch live crawl sessions
-        </span>
-        <h2 className="display-serif mt-3 text-3xl font-bold text-[var(--color-charcoal)] md:text-4xl">
-          Scrape sandbox pipeline.
-        </h2>
-      </div>
+    <section id="pipeline" className={bare ? "scroll-mt-24" : "scroll-mt-24 py-16 md:py-24"}>
+      <div className={bare ? "" : "mx-auto max-w-[1200px] px-6"}>
+        {!bare && (
+        <>
+        {/* Section header */}
+        <div className="mb-10 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-bark-grey)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-electric-indigo)]" />
+            Pipeline
+          </span>
+          <h2 className="mt-4 font-serif text-3xl font-normal tracking-[-0.03em] text-[var(--color-charcoal)] md:text-5xl">
+            Run the live pipeline.
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-relaxed text-[var(--color-bark-grey)]">
+            Scrape any public URL into clean Markdown, extract structured JSON, or run a monitored
+            multi-page crawl — no sign-in required.
+          </p>
+        </div>
 
-      <div className="panel-surface soft-shadow overflow-hidden bg-[var(--color-paper-white)] p-5 md:p-6">
-        <div className="grid gap-8 lg:grid-cols-12">
-          {/* Form Side */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            {showConfig && (
-              <div className="border border-[var(--color-stone-mist)] rounded-xl p-1 bg-[var(--color-warm-bone)]">
-                <ConfigPanel apiUrl={apiUrl} setApiUrl={setApiUrl} />
-              </div>
-            )}
+{/* Future-action affordances */}
+        <div className="mb-10 flex flex-wrap items-center justify-center gap-3">
+          {AFFORDANCES.map((aff) =>
+            aff.available ? (
+              <button
+                key={aff.id}
+                type="button"
+                onClick={() => selectAffordance(aff)}
+                title={aff.description}
+                className="group flex items-center gap-2 rounded-full border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-4 py-2 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-[var(--color-charcoal)] transition hover:border-[var(--color-electric-indigo)] hover:text-[var(--color-electric-indigo)]"
+              >
+                <span className="text-[var(--color-electric-indigo)]">{aff.icon}</span>
+                {aff.label}
+              </button>
+            ) : (
+              <span
+                key={aff.id}
+                title={aff.description}
+                className="flex cursor-not-allowed items-center gap-2 rounded-full border border-dashed border-[var(--color-stone-mist)] px-4 py-2 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-[var(--color-pebble)] opacity-70"
+              >
+                <span>{aff.icon}</span>
+                {aff.label}
+                <span className="rounded bg-[var(--color-warm-bone)] px-1.5 py-0.5 text-[9px] text-[var(--color-bark-grey)]">
+                  Soon
+                </span>
+              </span>
+            )
+          )}
+        </div>
+        </>
+        )}
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5 rounded-[18px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-5">
+        {/* Tool grid */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Form */}
+          <div className="lg:col-span-5">
+            <form
+              onSubmit={handleSubmit}
+              className="animate-slideDown space-y-5 rounded-[18px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-6 shadow-[0_16px_40px_rgba(41,37,36,0.08)]"
+            >
               {/* Target URL */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--color-charcoal)] uppercase tracking-wider font-mono">
+                <label className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--color-charcoal)]">
                   Target URL
                 </label>
                 <input
                   type="url"
                   value={url}
+                  ref={urlInputRef}
                   onChange={(e) => setUrl(e.target.value)}
                   required
                   placeholder="https://example.com/item"
-                  className="w-full rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-4 py-3 text-sm text-[var(--color-charcoal)] placeholder:text-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-4 focus:ring-[rgba(97,95,255,0.15)] transition duration-200"
+                  className="w-full rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-4 py-3 text-sm text-[var(--color-charcoal)] placeholder:text-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-4 focus:ring-[rgba(97,95,255,0.15)]"
                 />
               </div>
 
-              {/* Job Mode */}
+              {/* Mode toggle */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--color-charcoal)] uppercase tracking-wider font-mono">
+                <label className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--color-charcoal)]">
                   Job Mode
                 </label>
                 <div className="grid grid-cols-2 gap-2 rounded-xl bg-[var(--color-warm-bone)] p-1">
                   <button
                     type="button"
                     disabled={structuredExtract}
-                    onClick={() => setMode('scrape')}
+                    onClick={() => setMode("scrape")}
                     className={`rounded-lg py-2 text-xs font-semibold uppercase tracking-[0.08em] transition ${
-                      mode === 'scrape' && !structuredExtract
-                        ? 'bg-[var(--color-electric-indigo)] text-white shadow-sm'
-                        : 'text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] disabled:opacity-30'
+                      mode === "scrape" && !structuredExtract
+                        ? "bg-[var(--color-electric-indigo)] text-white shadow-sm"
+                        : "text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] disabled:opacity-30"
                     }`}
                   >
                     Single Scrape
@@ -284,11 +464,11 @@ export default function PipelineTool({ apiUrl, showConfig, setApiUrl, setShowCon
                   <button
                     type="button"
                     disabled={structuredExtract}
-                    onClick={() => setMode('crawl')}
+                    onClick={() => setMode("crawl")}
                     className={`rounded-lg py-2 text-xs font-semibold uppercase tracking-[0.08em] transition ${
-                      mode === 'crawl' && !structuredExtract
-                        ? 'bg-[var(--color-electric-indigo)] text-white shadow-sm'
-                        : 'text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] disabled:opacity-30'
+                      mode === "crawl" && !structuredExtract
+                        ? "bg-[var(--color-electric-indigo)] text-white shadow-sm"
+                        : "text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] disabled:opacity-30"
                     }`}
                   >
                     Multi Crawl
@@ -296,170 +476,184 @@ export default function PipelineTool({ apiUrl, showConfig, setApiUrl, setShowCon
                 </div>
               </div>
 
-              {/* Max Pages Range for Multi Crawl */}
-              {mode === 'crawl' && !structuredExtract && (
+              {/* Max pages */}
+              {mode === "crawl" && !structuredExtract && (
                 <div className="animate-slideDown rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] p-4">
-                  <div className="mb-2 flex items-center justify-between text-xs font-medium">
-                    <span className="text-[var(--color-charcoal)] font-mono">MAX CRAWL PAGES</span>
-                    <span className="font-semibold text-[var(--color-electric-indigo)]">{maxPages} pages</span>
+                  <div className="mb-2 flex items-center justify-between font-mono text-xs font-medium">
+                    <span className="text-[var(--color-charcoal)]">MAX CRAWL PAGES</span>
+                    <span className="font-semibold text-[var(--color-electric-indigo)]">
+                      {maxPages} page{maxPages === 1 ? "" : "s"}
+                    </span>
                   </div>
                   <input
                     type="range"
-                    min="1"
-                    max="10"
+                    min={1}
+                    max={10}
                     value={maxPages}
-                    onChange={(e) => setMaxPages(parseInt(e.target.value))}
+                    onChange={(e) => setMaxPages(parseInt(e.target.value, 10))}
                     className="h-1 w-full cursor-pointer accent-[var(--color-electric-indigo)]"
                   />
                 </div>
               )}
 
-              {/* AI Extraction Toggle */}
+{/* AI extraction toggle */}
               <div className="flex items-center justify-between rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] p-3">
                 <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-charcoal)] font-mono">Structured AI Extraction</div>
-                  <div className="mt-1 text-[10px] text-[var(--color-bark-grey)]">Extract fields into clean JSON</div>
-                </div>
-                <label className="relative inline-flex cursor-pointer items-center">
-                  <input
-                    type="checkbox"
-                    checked={structuredExtract}
-                    onChange={(e) => setStructuredExtract(e.target.checked)}
-                    className="peer sr-only"
-                  />
-                  <div className="h-6 w-11 rounded-full bg-[var(--color-stone-mist)] transition peer-checked:bg-[var(--color-electric-indigo)]">
-                    <div className="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-5" />
+                  <div className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-charcoal)]">
+                    Structured AI extraction
                   </div>
-                </label>
+                  <div className="mt-1 text-[10px] text-[var(--color-bark-grey)]">
+                    Extract fields into clean JSON
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={structuredExtract}
+                  onClick={() => setStructuredExtract((v) => !v)}
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition ${
+                    structuredExtract ? "bg-[var(--color-electric-indigo)]" : "bg-[var(--color-stone-mist)]"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
+                      structuredExtract ? "left-[22px]" : "left-0.5"
+                    }`}
+                  />
+                </button>
               </div>
 
-              {/* AI Extraction Settings */}
+              {/* Extraction options */}
               {structuredExtract && (
                 <div className="animate-slideDown space-y-4 rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] p-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-bark-grey)] font-mono">LLM Provider</label>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--color-charcoal)]">
+                      Schema Template
+                    </label>
                     <select
-                      value={provider}
-                      onChange={(e) => setProvider(e.target.value as any)}
-                      className="w-full rounded-lg border border-[var(--color-stone-mist)] bg-white px-3 py-2 text-xs text-[var(--color-charcoal)] focus:border-[var(--color-electric-indigo)] focus:outline-none"
+                      value={schemaTemplate}
+                      onChange={(e) => handleTemplateChange(e.target.value as SchemaTemplateKey)}
+                      className="w-full rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-3 py-2 text-sm text-[var(--color-charcoal)] focus:border-[var(--color-electric-indigo)] focus:outline-none"
                     >
-                      <option value="openai">OpenAI (gpt-4o-mini)</option>
-                      <option value="anthropic">Anthropic (claude-3-5-haiku)</option>
+                      <option value="product">Product</option>
+                      <option value="article">Article</option>
+                      <option value="custom">Custom</option>
                     </select>
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-bark-grey)] font-mono">Your API KEY</label>
-                    <div className="relative">
+                  <div className="flex flex-col gap-2">
+                    <label className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--color-charcoal)]">
+                      JSON Schema
+                    </label>
+                    <textarea
+                      value={schemaJson}
+                      onChange={(e) => setSchemaJson(e.target.value)}
+                      rows={6}
+                      spellCheck={false}
+                      className="w-full resize-y rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-3 py-2 font-mono text-[11px] leading-relaxed text-[var(--color-charcoal)] focus:border-[var(--color-electric-indigo)] focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--color-charcoal)]">
+                      Provider
+                    </label>
+                    <select
+                      value={provider}
+                      onChange={(e) => setProvider(e.target.value as "openai" | "anthropic")}
+                      className="w-full rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-3 py-2 text-sm text-[var(--color-charcoal)] focus:border-[var(--color-electric-indigo)] focus:outline-none"
+                    >
+                      <option value="openai">OpenAI</option>
+                      <option value="anthropic">Anthropic</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--color-charcoal)]">
+                      API Key
+                    </label>
+                    <div className="flex gap-2">
                       <input
-                        type={showKey ? 'text' : 'password'}
+                        type={showKey ? "text" : "password"}
                         value={apiKey}
                         onChange={(e) => setApiKey(e.target.value)}
-                        required
-                        placeholder={provider === 'openai' ? 'sk-...' : 'sk-ant-...'}
-                        className="w-full rounded-lg border border-[var(--color-stone-mist)] bg-white px-3 pr-10 py-2 text-xs text-[var(--color-charcoal)] focus:border-[var(--color-electric-indigo)] focus:outline-none"
+                        placeholder="sk-…"
+                        autoComplete="off"
+                        className="w-full rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-3 py-2 text-sm text-[var(--color-charcoal)] placeholder:text-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none"
                       />
                       <button
                         type="button"
-                        onClick={() => setShowKey(!showKey)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] text-[10px] font-mono"
+                        onClick={() => setShowKey((v) => !v)}
+                        className="shrink-0 rounded-lg border border-[var(--color-stone-mist)] px-3 py-2 text-xs font-semibold text-[var(--color-bark-grey)] transition hover:border-[var(--color-electric-indigo)] hover:text-[var(--color-charcoal)]"
                       >
-                        {showKey ? 'Hide' : 'Show'}
+                        {showKey ? "Hide" : "Show"}
                       </button>
                     </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-bark-grey)] font-mono">Schema Template</label>
-                    <div className="flex gap-2">
-                      {Object.keys(SCHEMA_TEMPLATES).map((tmpl) => (
-                        <button
-                          key={tmpl}
-                          type="button"
-                          onClick={() => setSchemaTemplate(tmpl as any)}
-                          className={`flex-1 rounded-lg border px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.06em] transition ${
-                            schemaTemplate === tmpl
-                              ? 'border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.08)] text-[var(--color-electric-indigo)]'
-                              : 'border-[var(--color-stone-mist)] bg-white text-[var(--color-bark-grey)] hover:border-[var(--color-pebble)]'
-                          }`}
-                        >
-                          {tmpl}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-bark-grey)] font-mono">Target JSON Schema</label>
-                    <textarea
-                      rows={6}
-                      value={schemaJson}
-                      onChange={(e) => setSchemaJson(e.target.value)}
-                      className="w-full rounded-lg border border-[var(--color-stone-mist)] bg-white p-2 text-[10px] font-mono text-[var(--color-charcoal)] focus:border-[var(--color-electric-indigo)] focus:outline-none"
-                    />
                   </div>
                 </div>
               )}
 
-              {/* Submit Action */}
+{/* Advanced config */}
+              <button
+                type="button"
+                onClick={() => setShowConfig((v) => !v)}
+                className="w-full text-left font-mono text-[10px] uppercase tracking-wider text-[var(--color-bark-grey)] transition hover:text-[var(--color-charcoal)]"
+              >
+                {showConfig ? "− Advanced settings" : "+ Advanced settings"}
+              </button>
+              {showConfig && <ConfigPanel apiUrl={apiUrl} setApiUrl={setApiUrl} />}
+
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading || !url}
-                className="flex w-full items-center justify-center rounded-lg bg-[var(--color-electric-indigo)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[var(--color-deep-violet)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full items-center justify-center rounded-lg bg-[var(--color-electric-indigo)] px-4 py-3 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[var(--color-deep-violet)] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? 'Processing...' : structuredExtract ? 'Extract JSON' : mode === 'scrape' ? 'Scrape Markdown' : 'Crawl Website'}
+                {loading
+                  ? "Processing…"
+                  : structuredExtract
+                  ? "Extract JSON"
+                  : mode === "crawl"
+                  ? "Run Crawl"
+                  : "Scrape Markdown"}
               </button>
             </form>
           </div>
 
-          {/* Results Side */}
+          {/* Results */}
           <div className="lg:col-span-7">
-            <div className="h-full min-h-[460px] rounded-[18px] border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] p-4 flex flex-col">
-              {(!loading && !error && !resultType) && <EmptyState />}
-              {loading && <LoadingPanel status={loadingStatus} progress={crawlResult?.progress} />}
+            <div className="flex min-h-[460px] flex-col">
+              {!loading && !error && resultType === null && <ResultEmpty />}
+
+              {loading && <ResultLoading status={loadingStatus} progress={crawlJob?.progress} />}
 
               {error && !loading && (
-                <div className="flex h-full flex-col items-center justify-center rounded-[16px] border border-red-200 bg-red-50 p-8 text-center my-auto">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-red-600">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-sm font-bold text-red-700 uppercase tracking-wider font-mono">Execution failed</h3>
-                  <p className="mt-2 max-w-md text-left text-xs text-red-600 font-mono bg-red-100/50 p-3 rounded-lg border border-red-200 overflow-x-auto">{error}</p>
-                </div>
+                <ResultError title={ERROR_TITLES[lastOp]} message={error} onRetry={() => retryRef.current?.()} />
               )}
 
-              {resultType === 'scrape' && scrapeResult && !loading && (
-                <div className="flex-1 flex flex-col">
-                  <ScrapeResult
-                    title={scrapeResult.title}
-                    excerpt={scrapeResult.excerpt}
-                    markdown={scrapeResult.markdown}
-                    activeTab={activeScrapeTab}
-                    setActiveTab={setActiveScrapeTab}
-                    onCopy={handleCopy}
-                    copied={copied}
-                  />
-                </div>
+              {resultType === "scrape" && scrapeResult && !loading && !error && (
+                <ResultWorkspace
+                  url={scrapeResult.url}
+                  title={scrapeResult.title}
+                  excerpt={scrapeResult.excerpt}
+                  markdown={scrapeResult.markdown}
+                  onScrape={() => void runScrape(scrapeResult.url)}
+                  onExtract={() => startExtractFromResult(scrapeResult.url)}
+                  onCrawl={() => startCrawlFromResult(scrapeResult.url)}
+                  onOpenInPipeline={() => handleOpenInPipeline(scrapeResult.url)}
+                  onNewScrape={handleNewScrape}
+                />
               )}
 
-              {resultType === 'extract' && extractResult && !loading && (
-                <div className="flex-1 flex flex-col">
-                  <ExtractResult data={extractResult} onCopy={handleCopy} copied={copied} />
-                </div>
+              {resultType === "extract" && extractResult && !loading && !error && (
+                <ExtractResult data={extractResult} onCopy={handleCopy} copied={copied} />
               )}
 
-              {resultType === 'crawl' && crawlResult && !loading && (
-                <div className="flex-1 flex flex-col">
-                  <CrawlResult
-                    crawlResult={crawlResult}
-                    selectedPage={selectedCrawlPage}
-                    setSelectedPage={setSelectedCrawlPage}
-                    onCopy={handleCopy}
-                    copied={copied}
-                  />
-                </div>
+              {resultType === "crawl" && crawlJob && crawlCompleted && !loading && !error && (
+                <CrawlResult
+                  job={crawlJob}
+                  selectedPage={selectedCrawlPage}
+                  onSelectPage={setSelectedCrawlPage}
+                  onCopy={handleCopy}
+                  copied={copied}
+                />
               )}
             </div>
           </div>
@@ -468,3 +662,4 @@ export default function PipelineTool({ apiUrl, showConfig, setApiUrl, setShowCon
     </section>
   );
 }
+

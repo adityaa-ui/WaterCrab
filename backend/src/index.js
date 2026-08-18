@@ -2,15 +2,26 @@ const express = require('express');
 const { JSDOM } = require('jsdom');
 const { Readability } = require('@mozilla/readability');
 const TurndownService = require('turndown');
-const { OpenAI } = require('openai');
-const Anthropic = require('@anthropic-ai/sdk');
 const db = require('./db');
 const { addCrawlJob } = require('./queue');
+const { validatePublicHttpUrl } = require('./ssrf');
+const { validateExtractionSchema } = require('./schema-validation');
+const { createRouteLimiter } = require('./rate-limit');
+const { extract, ExtractionError, ValidationError, SchemaValidationError, ContentTooLargeError, ProviderError, ProviderTimeoutError, ProviderAuthError, ProviderRateLimitError, ProviderUnavailableError, MalformedResponseError, OutputValidationError } = require('./extraction');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const BROWSER_SERVICE_URL = process.env.BROWSER_SERVICE_URL || 'http://localhost:3002';
+const INTERNAL_TOKEN = process.env.INTERNAL_TOKEN;
+
+// Trust proxy headers. Local / docker-compose use no external proxy, so we
+// default to trusting loopback. When deployed behind polyglot proxies that
+// terminate TLS and inject X-Forwarded-For (e.g. some Render configurations),
+// set TRUST_PROXY=1 (trust the first hop) so rate limiting keys by the real
+// client IP instead of the proxy's. See the implementation summary for details.
+const TRUST_PROXY = process.env.TRUST_PROXY;
+app.set('trust proxy', TRUST_PROXY !== undefined ? TRUST_PROXY : 'loopback');
 
 // Middleware
 app.use(express.json());
@@ -58,13 +69,24 @@ app.use((req, res, next) => {
   next();
 });
 
+// Headers for the internal browser-service call. Fails closed if the backend
+// has not been configured with INTERNAL_TOKEN (never sends an unauthenticated
+// request). The token is never logged or echoed to clients.
+function internalAuthHeaders() {
+  if (!INTERNAL_TOKEN) {
+    throw new Error('INTERNAL_TOKEN is not configured on the backend. Refusing to call browser-service.');
+  }
+  return {
+    'Content-Type': 'application/json',
+    'x-internal-token': INTERNAL_TOKEN
+  };
+}
+
 // Core scraping function calling the browser-service
 async function performScrape(url) {
   const response = await fetch(`${BROWSER_SERVICE_URL}/render`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: internalAuthHeaders(),
     body: JSON.stringify({ url })
   });
 
@@ -106,59 +128,28 @@ async function performScrape(url) {
   };
 }
 
-// Extraction logic using OpenAI
-async function extractWithOpenAI(markdown, schema, apiKey) {
-  const openai = new OpenAI({ apiKey });
-  
-  const systemPrompt = `You are a precise data extraction assistant. Extract information from the provided markdown content according to this JSON Schema. You MUST respond with a valid JSON object matching the schema exactly.
-  
-  JSON Schema:
-  ${JSON.stringify(schema, null, 2)}`;
-
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: markdown }
-    ],
-    response_format: { type: 'json_object' }
-  });
-
-  const content = response.choices[0].message.content;
-  return JSON.parse(content);
-}
-
-// Extraction logic using Anthropic
-async function extractWithAnthropic(markdown, schema, apiKey) {
-  const anthropic = new Anthropic({ apiKey });
-
-  const response = await anthropic.messages.create({
-    model: 'claude-3-5-haiku-latest',
-    max_tokens: 4000,
-    system: 'Extract structured data from the user input using the extract_data tool.',
-    messages: [
-      { role: 'user', content: markdown }
-    ],
-    tools: [
-      {
-        name: 'extract_data',
-        description: 'Extract structured data matching the schema',
-        input_schema: schema
-      }
-    ],
-    tool_choice: { type: 'tool', name: 'extract_data' }
-  });
-
-  const toolUseBlock = response.content.find(block => block.type === 'tool_use' && block.name === 'extract_data');
-  if (!toolUseBlock) {
-    throw new Error('Anthropic did not invoke the extract_data tool.');
-  }
-
-  return toolUseBlock.input;
-}
+// Per-route rate limits (windowed per client IP). Values are configurable via
+// env; defaults are deliberately non-aggressive because each request triggers a
+// browser render and/or a BYOK LLM call.
+const LIMITER_SCRAPE = createRouteLimiter({
+  windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 60000,
+  limit: Number(process.env.RATE_LIMIT_SCRAPE) || 60
+});
+const LIMITER_EXTRACT = createRouteLimiter({
+  windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 60000,
+  limit: Number(process.env.RATE_LIMIT_EXTRACT) || 30
+});
+const LIMITER_CRAWL = createRouteLimiter({
+  windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 60000,
+  limit: Number(process.env.RATE_LIMIT_CRAWL) || 10
+});
+const LIMITER_JOBS = createRouteLimiter({
+  windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 60000,
+  limit: Number(process.env.RATE_LIMIT_JOBS) || 120
+});
 
 // POST /scrape endpoint
-app.post('/scrape', async (req, res) => {
+app.post('/scrape', LIMITER_SCRAPE, async (req, res) => {
   const { url } = req.body;
 
   if (!url) {
@@ -168,13 +159,10 @@ app.post('/scrape', async (req, res) => {
     });
   }
 
-  try {
-    new URL(url);
-  } catch (err) {
-    return res.status(400).json({
-      success: false,
-      error: 'Invalid URL format.'
-    });
+  // Fail-fast scheme/URL pre-check (authoritative DNS check is in browser-service).
+  const urlCheck = validatePublicHttpUrl(url);
+  if (!urlCheck.ok) {
+    return res.status(urlCheck.status).json({ success: false, error: urlCheck.error });
   }
 
   try {
@@ -194,60 +182,59 @@ app.post('/scrape', async (req, res) => {
 });
 
 // POST /extract endpoint (BYOK)
-app.post('/extract', async (req, res) => {
-  const { url, schema, provider, apiKey } = req.body;
-
-  if (!url || !schema || !provider || !apiKey) {
-    return res.status(400).json({
-      success: false,
-      error: 'Missing required parameters. Required: url, schema, provider, apiKey.'
-    });
-  }
-
-  if (provider !== 'openai' && provider !== 'anthropic') {
-    return res.status(400).json({
-      success: false,
-      error: 'Invalid provider. Must be "openai" or "anthropic".'
-    });
-  }
-
+app.post('/extract', LIMITER_EXTRACT, async (req, res) => {
   try {
-    new URL(url);
-  } catch (err) {
-    return res.status(400).json({
-      success: false,
-      error: 'Invalid URL format.'
-    });
-  }
-
-  try {
-    console.log(`Scraping content for extraction: ${url}`);
-    const scrapeResult = await performScrape(url);
-
-    console.log(`Extracting structured data using provider: ${provider}`);
-    let extractedData;
-    if (provider === 'openai') {
-      extractedData = await extractWithOpenAI(scrapeResult.markdown, schema, apiKey);
-    } else {
-      extractedData = await extractWithAnthropic(scrapeResult.markdown, schema, apiKey);
-    }
-
-    return res.json({
-      success: true,
-      data: extractedData
-    });
+    const result = await extract(req.body);
+    
+    return res.json(result);
   } catch (error) {
     const safeErrorMsg = redactString(error.message);
-    console.error(`Extraction error for ${url}:`, safeErrorMsg);
-    return res.status(500).json({
-      success: false,
-      error: `Extraction failed: ${safeErrorMsg}`
-    });
+    console.error(`Extraction error:`, safeErrorMsg);
+    
+    // Handle specific extraction errors
+    if (error instanceof ValidationError) {
+      return res.status(400).json({ success: false, error: safeErrorMsg, code: error.code });
+    }
+    if (error instanceof SchemaValidationError) {
+      return res.status(400).json({ success: false, error: safeErrorMsg, code: 'SCHEMA_VALIDATION_ERROR' });
+    }
+    if (error instanceof ContentTooLargeError) {
+      return res.status(413).json({ success: false, error: safeErrorMsg, code: 'CONTENT_TOO_LARGE' });
+    }
+    if (error instanceof ProviderAuthError) {
+      return res.status(401).json({ success: false, error: safeErrorMsg, code: 'PROVIDER_AUTH_ERROR' });
+    }
+    if (error instanceof ProviderRateLimitError) {
+      const retryAfter = error.retryAfter || 60;
+      res.set('Retry-After', String(retryAfter));
+      return res.status(429).json({ success: false, error: safeErrorMsg, code: 'PROVIDER_RATE_LIMIT', retryAfter });
+    }
+    if (error instanceof ProviderTimeoutError) {
+      return res.status(504).json({ success: false, error: safeErrorMsg, code: 'PROVIDER_TIMEOUT' });
+    }
+    if (error instanceof ProviderUnavailableError) {
+      return res.status(503).json({ success: false, error: safeErrorMsg, code: 'PROVIDER_UNAVAILABLE' });
+    }
+    if (error instanceof MalformedResponseError) {
+      return res.status(502).json({ success: false, error: safeErrorMsg, code: 'MALFORMED_RESPONSE' });
+    }
+    if (error instanceof OutputValidationError) {
+      return res.status(422).json({ success: false, error: safeErrorMsg, code: 'OUTPUT_VALIDATION_ERROR', details: error.details });
+    }
+    if (error instanceof ProviderError) {
+      return res.status(502).json({ success: false, error: safeErrorMsg, code: 'PROVIDER_ERROR' });
+    }
+    if (error instanceof ExtractionError) {
+      return res.status(500).json({ success: false, error: safeErrorMsg, code: error.code || 'EXTRACTION_ERROR' });
+    }
+    
+    // Unknown error
+    return res.status(500).json({ success: false, error: 'Extraction failed', code: 'INTERNAL_ERROR' });
   }
 });
 
 // POST /crawl endpoint (Queued multi-page scraping)
-app.post('/crawl', async (req, res) => {
+app.post('/crawl', LIMITER_CRAWL, async (req, res) => {
   const { url, maxPages } = req.body;
 
   if (!url) {
@@ -257,13 +244,10 @@ app.post('/crawl', async (req, res) => {
     });
   }
 
-  try {
-    new URL(url);
-  } catch (err) {
-    return res.status(400).json({
-      success: false,
-      error: 'Invalid URL format.'
-    });
+  // Fail-fast scheme/URL pre-check (authoritative DNS check is in browser-service).
+  const urlCheck = validatePublicHttpUrl(url);
+  if (!urlCheck.ok) {
+    return res.status(urlCheck.status).json({ success: false, error: urlCheck.error });
   }
 
   let pagesLimit = parseInt(maxPages, 10);
@@ -290,7 +274,7 @@ app.post('/crawl', async (req, res) => {
 });
 
 // GET /jobs/:id endpoint (Poll crawl status)
-app.get('/jobs/:id', async (req, res) => {
+app.get('/jobs/:id', LIMITER_JOBS, async (req, res) => {
   const jobId = req.params.id;
 
   try {
@@ -320,16 +304,20 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'backend' });
 });
 
-// Start Express Server
-const server = app.listen(PORT, () => {
-  console.log(`WaterCrab Backend listening on port ${PORT}`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM signal received. Shutting down server...');
-  server.close(async () => {
-    console.log('Server closed.');
-    process.exit(0);
+// Start Express server only when run directly (not when required by tests).
+if (require.main === module) {
+  const server = app.listen(PORT, () => {
+    console.log(`WaterCrab Backend listening on port ${PORT}`);
   });
-});
+
+  // Graceful shutdown
+  process.on('SIGTERM', async () => {
+    console.log('SIGTERM signal received. Shutting down server...');
+    server.close(async () => {
+      console.log('Server closed.');
+      process.exit(0);
+    });
+  });
+}
+
+module.exports = app;

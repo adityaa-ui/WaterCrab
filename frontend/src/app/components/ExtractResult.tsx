@@ -1,38 +1,51 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { downloadText } from "@/lib/download";
+import { CheckIcon, CopyIcon, DownloadIcon } from "@/lib/icons";
 
-interface ExtractResultProps {
-  data: any;
+export interface ExtractResultProps {
+  data: Record<string, unknown>;
   onCopy: (text: string) => void;
   copied: boolean;
 }
 
-const ExtractResult: React.FC<ExtractResultProps> = ({ data, onCopy, copied }) => (
-  <div className="flex-1 flex flex-col bg-card-bg border border-card-border rounded-2xl overflow-hidden shadow-2xl">
-    <div className="px-5 py-3 border-b border-card-border bg-[#0a0d15] flex items-center justify-between">
-      <span className="text-xs font-semibold text-white">Extraction Output</span>
-      <span className="text-[9px] bg-green-500/15 text-green-400 px-1.5 py-0.5 rounded font-bold uppercase">JSON</span>
-    </div>
-    <button
-      onClick={() => onCopy(JSON.stringify(data, null, 2))}
-      className="p-1.5 rounded-lg border border-card-border hover:bg-gray-800 text-gray-400 hover:text-white transition"
-      title="Copy JSON"
-    >
-      {copied ? (
-        <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-        </svg>
-      ) : (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-        </svg>
-      )}
-    </button>
-    <div className="flex-1 p-5 bg-[#07090f] overflow-auto max-h-[500px]">
-      <pre className="text-xs font-mono text-green-400 selection:bg-accent/30 whitespace-pre-wrap">
-        {JSON.stringify(data, null, 2)}
-      </pre>
-    </div>
-  </div>
-);
+export default function ExtractResult({ data, onCopy, copied }: ExtractResultProps) {
+  const json = JSON.stringify(data, null, 2);
 
-export default ExtractResult;
+  return (
+    <div className="animate-fadeIn flex min-h-[420px] flex-1 flex-col overflow-hidden rounded-[18px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] shadow-[0_16px_40px_rgba(41,37,36,0.08)]">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-5 py-3">
+        <div className="flex items-center gap-3">
+          <span className="shrink-0 rounded bg-[var(--color-lichen-green)]/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-lichen-green)]">
+            JSON
+          </span>
+          <span className="font-mono text-xs font-semibold text-[var(--color-charcoal)]">Extraction Output</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onCopy(json)}
+            title="Copy JSON"
+            className="rounded-lg border border-[var(--color-stone-mist)] p-1.5 text-[var(--color-bark-grey)] transition hover:border-[var(--color-electric-indigo)] hover:text-[var(--color-charcoal)]"
+          >
+            {copied ? <CheckIcon className="text-[var(--color-lichen-green)]" /> : <CopyIcon />}
+          </button>
+          <button
+            type="button"
+            onClick={() => downloadText("extraction.json", json, "application/json;charset=utf-8")}
+            title="Download JSON"
+            className="rounded-lg border border-[var(--color-stone-mist)] p-1.5 text-[var(--color-bark-grey)] transition hover:border-[var(--color-electric-indigo)] hover:text-[var(--color-charcoal)]"
+          >
+            <DownloadIcon />
+          </button>
+        </div>
+      </div>
+
+      <div className="max-h-[520px] flex-1 overflow-auto bg-[var(--color-warm-bone)] p-5">
+        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+          {json}
+        </pre>
+      </div>
+    </div>
+  );
+}

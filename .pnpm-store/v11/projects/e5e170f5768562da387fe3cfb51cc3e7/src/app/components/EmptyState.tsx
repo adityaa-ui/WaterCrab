@@ -1,21 +1,23 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { DocumentIcon } from "@/lib/icons";
 
-interface EmptyStateProps {
+export interface EmptyStateProps {
   message?: string;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({ message }) => (
-  <div className="flex-1 glow-card border border-card-border rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-    <div className="bg-accent/10 border border-accent/20 w-16 h-16 rounded-2xl flex items-center justify-center text-accent/80 mb-4">
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-      </svg>
+export default function EmptyState({ message }: EmptyStateProps) {
+  return (
+    <div className="animate-fadeIn flex min-h-[420px] flex-1 flex-col items-center justify-center rounded-[18px] border border-dashed border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-8 text-center">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] text-[var(--color-pebble)]">
+        <DocumentIcon className="h-8 w-8" />
+      </div>
+      <h3 className="mt-4 font-serif text-lg font-semibold text-[var(--color-charcoal)]">
+        {message || "No content queued yet"}
+      </h3>
+      <p className="mt-1 max-w-sm text-sm text-[var(--color-bark-grey)]">
+        Enter a target URL and choose a strategy to see results populate here.
+      </p>
     </div>
-    <h3 className="text-lg font-semibold text-gray-200">{message || 'No content enqueued'}</h3>
-    <p className="text-xs text-gray-400 max-w-sm mt-1">
-      Enter a target URL and choose a scraping strategy on the left to see results populated here.
-    </p>
-  </div>
-);
-
-export default EmptyState;
+  );
+}

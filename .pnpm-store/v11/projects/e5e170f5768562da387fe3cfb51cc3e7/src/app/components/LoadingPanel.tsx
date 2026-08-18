@@ -1,27 +1,43 @@
-import React from 'react';
+"use client";
+import React from "react";
+import { Spinner } from "@/lib/icons";
+import type { CrawlProgress } from "@/lib/types";
 
-interface LoadingPanelProps {
+export interface LoadingPanelProps {
   status: string;
-  progress?: { current: number; total: number };
+  progress?: CrawlProgress;
 }
 
-const LoadingPanel: React.FC<LoadingPanelProps> = ({ status, progress }) => (
-  <div className="flex-1 glow-card border border-card-border rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-    <div className="relative w-16 h-16 mb-4">
-      <div className="absolute inset-0 rounded-full border-4 border-accent/20" />
-      <div className="absolute inset-0 rounded-full border-4 border-accent border-t-transparent animate-spin" />
-    </div>
-    <h3 className="text-md font-semibold text-gray-200">Pipeline Executing</h3>
-    <p className="text-xs text-accent font-medium mt-1 animate-pulse">{status}</p>
-    {progress && (
-      <div className="w-64 bg-gray-800 rounded-full h-1.5 mt-4 overflow-hidden border border-card-border">
-        <div
-          className="bg-accent h-full transition-all duration-500"
-          style={{ width: `${(progress.current / progress.total) * 100}%` }}
-        />
-      </div>
-    )}
-  </div>
-);
+export default function LoadingPanel({ status, progress }: LoadingPanelProps) {
+  const percent =
+    progress && progress.total > 0
+      ? Math.min(100, Math.round((progress.current / progress.total) * 100))
+      : 0;
 
-export default LoadingPanel;
+  return (
+    <div className="animate-fadeIn flex min-h-[420px] flex-1 flex-col items-center justify-center rounded-[18px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-8 text-center shadow-[0_16px_40px_rgba(41,37,36,0.08)]">
+      <Spinner className="text-[var(--color-electric-indigo)]" />
+      <h3 className="mt-5 font-mono text-xs font-semibold uppercase tracking-[0.10em] text-[var(--color-charcoal)]">
+        Pipeline executing
+      </h3>
+      <p className="mt-2 font-mono text-xs text-[var(--color-electric-indigo)]">{status}</p>
+
+      {progress && progress.total > 0 && (
+        <div className="mt-6 w-64">
+          <div className="mb-1 flex items-center justify-between font-mono text-[10px] text-[var(--color-bark-grey)]">
+            <span>
+              {progress.current} of {progress.total} pages
+            </span>
+            <span>{percent}%</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-[var(--color-stone-mist)]">
+            <div
+              className="h-full rounded-full bg-[var(--color-electric-indigo)] transition-all duration-500"
+              style={{ width: `${percent}%` }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -8,6 +8,7 @@ import LogoMarquee from './components/LogoMarquee';
 import FeatureShowcase from './components/FeatureShowcase';
 import ProjectsSection from './components/ProjectsSection';
 import AgenticGrid from './components/AgenticGrid';
+import PipelineTool from './components/PipelineTool';
 import AuthModal from './components/AuthModal';
 import { createClient as createBrowserClient } from '@/lib/supabase/client';
 
@@ -42,6 +43,10 @@ export default function Home() {
       {!showSearchResults && <main className="relative z-10 mx-auto max-w-[1200px] px-6 pb-20 pt-12">
         
         {/* Feature Highlights Grid */}
+        {/* Live product pipeline (#pipeline) */}
+        <PipelineTool initialUrl={undefined} />
+
+
         <FeatureGrid />
 
         {/* Numeric credibility metrics bar */}

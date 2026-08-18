@@ -17,6 +17,8 @@ services:
     container_name: watercrab-browser
     ports:
       - '3002:3002'
+    environment:
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN must be set in the environment}
     restart: always
 
   api:
@@ -30,6 +32,7 @@ services:
       - PORT=3001
       - REDIS_URL=redis://redis:6379
       - BROWSER_SERVICE_URL=http://browser:3002
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN must be set in the environment}
     depends_on:
       - redis
       - browser
@@ -43,6 +46,7 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379
       - BROWSER_SERVICE_URL=http://browser:3002
+      - INTERNAL_TOKEN=${INTERNAL_TOKEN:?INTERNAL_TOKEN must be set in the environment}
     depends_on:
       - redis
       - browser

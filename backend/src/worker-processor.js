@@ -2,8 +2,21 @@ const db = require('./db');
 const { JSDOM } = require('jsdom');
 const { Readability } = require('@mozilla/readability');
 const TurndownService = require('turndown');
+require('dotenv').config();
 
 const BROWSER_SERVICE_URL = process.env.BROWSER_SERVICE_URL || 'http://localhost:3002';
+const INTERNAL_TOKEN = process.env.INTERNAL_TOKEN;
+
+// Headers for the internal browser-service call (same token as the API).
+function internalAuthHeaders() {
+  if (!INTERNAL_TOKEN) {
+    throw new Error('INTERNAL_TOKEN is not configured on the worker. Refusing to call browser-service.');
+  }
+  return {
+    'Content-Type': 'application/json',
+    'x-internal-token': INTERNAL_TOKEN
+  };
+}
 
 async function processCrawlTask(jobId, startUrl, maxPages) {
   const visited = new Set();
@@ -34,9 +47,7 @@ async function processCrawlTask(jobId, startUrl, maxPages) {
         // Fetch rendered page from browser-service
         const response = await fetch(`${BROWSER_SERVICE_URL}/render`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: internalAuthHeaders(),
           body: JSON.stringify({ url: normalizedUrl })
         });
 

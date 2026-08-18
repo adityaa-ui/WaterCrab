@@ -129,3 +129,72 @@ WaterCrab prioritizes user privacy. When performing LLM-guided structured extrac
 - Keys are sent directly over secure HTTPS transport to the `/extract` endpoint.
 - Keys are **never** persisted to databases.
 - Keys are automatically redacted and masked from all backend application logs and error response payloads using dedicated sanitizer utilities.
+
+---
+
+## 🛡️ Security Hardening & Configuration
+
+### Internal token (`INTERNAL_TOKEN`)
+The browser rendering service (`/render`) is a shared, internal endpoint that fetches
+arbitrary URLs with a headless browser. It is now protected by a shared secret and is
+**not** exposed to the public internet.
+
+- The API and the worker send `x-internal-token: <INTERNAL_TOKEN>` on every call to
+  `/render`. The browser service rejects requests without the correct token (401),
+  using a constant-time comparison. If `INTERNAL_TOKEN` is unset, the browser service
+  **refuses to start** (fail-closed).
+- The token must be set **via environment variables only** — never hardcoded or committed.
+
+Generate a token locally (e.g. 64 random hex chars):
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Set it in both `backend/.env` and `browser-service/.env` (both are gitignored):
+
+```dotenv
+INTERNAL_TOKEN=<paste the generated value>
+```
+
+> For Docker Compose, export `INTERNAL_TOKEN` in your shell and run
+> `docker-compose up --build`; the services fail-fast if it is missing.
+> For Render, set `INTERNAL_TOKEN` on the **browser**, **api**, and **worker**
+> services in the dashboard — all three must match. It is declared with
+> `sync: false` in `render.yaml` so it stays out of the repo.
+
+### SSRF protection
+- The browser service only accepts `http:`/`https:` URLs with no embedded credentials,
+  and blocks IP literals / DNS results in private, loopback, link-local, CGNAT,
+  reserved, multicast, cloud-metadata (`169.254.169.254`), IPv6-mapped, IPv4-compatible,
+  and NAT64 ranges (including IPv4-mapped `::ffff:127.0.0.1` and NAT64 `64:ff9b::…`).
+- It re-checks the **final** URL after navigation to catch redirects to internal hosts.
+- The backend applies a cheap fail-fast URL pre-check before forwarding.
+
+### Rate limiting
+The backend applies per-route, per-IP rate limits (defaults in requests/minute):
+
+| Route | Default limit | Env override |
+|-------|---------------|--------------|
+| `POST /scrape` | 60 | `RATE_LIMIT_SCRAPE` |
+| `POST /extract` | 30 | `RATE_LIMIT_EXTRACT` |
+| `POST /crawl` | 10 | `RATE_LIMIT_CRAWL` |
+| `GET /jobs/:id` | 120 | `RATE_LIMIT_JOBS` |
+
+The shared window is `RATE_LIMIT_WINDOW_MS` (default `60000`). Responses include
+standard `RateLimit`/`RateLimit-Policy` headers and a `429 { success, error }` body.
+
+### Trust proxy (`TRUST_PROXY`)
+`trust proxy` defaults to `loopback`, which is correct for local development and
+docker-compose (no external proxy). When deployed behind a TLS-terminating proxy that
+injects `X-Forwarded-For` — common in Render — set `TRUST_PROXY=1` so rate limiting
+keys by the real client IP rather than the proxy's.
+
+### Running the tests
+Zero extra test dependencies (uses Node's built-in test runner):
+
+```bash
+cd backend          && npm test
+cd browser-service  && npm test
+```
+

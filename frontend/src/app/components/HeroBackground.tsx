@@ -47,10 +47,10 @@ export default function HeroBackground() {
       <div 
         className="absolute inset-0"
         style={{
-          backgroundColor: "#fafaf9",
+          backgroundColor: "var(--color-warm-bone)",
           backgroundImage: `
-            repeating-linear-gradient(to right, #e7e5e4 0px, #e7e5e4 1px, transparent 1px, transparent 120px),
-            repeating-linear-gradient(to bottom, #e7e5e4 0px, #e7e5e4 1px, transparent 1px, transparent 120px)
+            repeating-linear-gradient(to right, var(--color-stone-mist) 0px, var(--color-stone-mist) 1px, transparent 1px, transparent 120px),
+            repeating-linear-gradient(to bottom, var(--color-stone-mist) 0px, var(--color-stone-mist) 1px, transparent 1px, transparent 120px)
           `
         }}
       />
@@ -105,7 +105,7 @@ export default function HeroBackground() {
 
       {/* Roaming Highlight Cell */}
       <div
-        className="absolute w-[12px] h-[12px] bg-[#e7e5e4] transition-all duration-500 ease-in-out"
+        className="absolute w-[12px] h-[12px] bg-[var(--color-stone-mist)] transition-all duration-500 ease-in-out"
         style={{
           left: POSITIONS[posIndex].left,
           top: POSITIONS[posIndex].top,
@@ -175,7 +175,7 @@ function PixelCluster({ left, right, top, bottom, delayOffset }: PixelClusterPro
         const style: React.CSSProperties = {
           width: "10px",
           height: "10px",
-          backgroundColor: "#a6a09b", // Pebble
+          backgroundColor: "var(--color-pebble)", // Pebble
         };
 
         if (cell.animate && cell.index !== undefined) {
