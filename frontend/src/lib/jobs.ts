@@ -5,23 +5,12 @@ import type {
   JobStatusResponse
 } from "./types";
 
-/**
- * Default backend origin. Set NEXT_PUBLIC_API_URL to point at a deployed or
- * locally hosted backend; otherwise the local dev default is used.
- */
 export const DEFAULT_API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
-/** Prepends https:// when no scheme is present. */
 export function normalizeUrl(value: string): string {
   return /^https?:\/\//i.test(value.trim()) ? value.trim() : `https://${value.trim()}`;
 }
 
-/**
- * Client-side URL validation for fast UX. This is NOT a security boundary —
- * the backend (and browser-service) perform the authoritative SSRF checks.
- * Returns an error message, or null when the URL is acceptable.
- */
 export function validateUrl(value: string): string | null {
   const raw = value.trim();
   if (!raw) return "Please enter a URL.";
@@ -51,7 +40,7 @@ async function readJson<T>(res: Response): Promise<T> {
   }
 }
 
-/** Maps the backend's raw status to a client-facing CrawlStatus. */
+
 export function mapCrawlStatus(raw: string): CrawlStatus {
   const s = raw.toLowerCase();
   if (s === "completed") return "completed";
