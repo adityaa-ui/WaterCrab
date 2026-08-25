@@ -1,0 +1,66 @@
+services:
+  # 1. Browser Rendering Service
+  - type: web
+    name: watercrab-browser
+    env: docker
+    dockerContext: ./browser-service
+    dockerfilePath: Dockerfile
+    plan: starter # Starter plan is recommended for Playwright's CPU and memory requirements
+    envVars:
+      - key: PORT
+        value: 3002
+      # Shared secret authenticating calls to this service's /render endpoint.
+      # Set the value in the Render dashboard (sync:false keeps it out of the repo).
+      - key: INTERNAL_TOKEN
+        sync: false
+
+  # 2. WaterCrab API Service
+  - type: web
+    name: watercrab-api
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: Dockerfile.api
+    plan: free
+    ports:
+      - port: 3001
+        protocol: http
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: BROWSER_SERVICE_URL
+        value: http://watercrab-browser:3002
+      - key: REDIS_URL
+        fromRedis:
+          name: watercrab-redis
+          property: connectionString
+      # Must match the INTERNAL_TOKEN set on the watercrab-browser service.
+      # Set the value in the Render dashboard (sync:false keeps it out of the repo).
+      - key: INTERNAL_TOKEN
+        sync: false
+      # Behind Render's proxy, set TRUST_PROXY so rate limiting keys by client IP.
+      # - key: TRUST_PROXY
+      #   value: "1"
+
+  # 3. WaterCrab Background Worker
+  - type: worker
+    name: watercrab-worker
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: Dockerfile.worker
+    plan: free
+    envVars:
+      - key: BROWSER_SERVICE_URL
+        value: http://watercrab-browser:3002
+      - key: REDIS_URL
+        fromRedis:
+          name: watercrab-redis
+          property: connectionString
+      # Must match the INTERNAL_TOKEN set on the watercrab-browser service.
+      # Set the value in the Render dashboard (sync:false keeps it out of the repo).
+      - key: INTERNAL_TOKEN
+        sync: false
+
+redis:
+  - name: watercrab-redis
+    plan: free
+    ipAllowList: [] # Access restricted internally only for safety

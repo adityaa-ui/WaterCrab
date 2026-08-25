@@ -1,0 +1,86 @@
+{
+  "job-a1f7d1e2-1464-44b3-8be8-fd8e69fd3ca0": {
+    "id": "job-a1f7d1e2-1464-44b3-8be8-fd8e69fd3ca0",
+    "status": "completed",
+    "progress": {
+      "current": 1,
+      "total": 3
+    },
+    "results": [
+      {
+        "url": "https://vireonn.vercel.app",
+        "title": "Vireon",
+        "markdown": "![](https://vireonn.vercel.app/verion.png)\n\nHome [Contact](https://github.com/adityaa-ui) [Github](https://github.com/adityaa-ui/vireon)\n\nEnterprise Identity Platform\n\n## Secure.  \nVerified.  \nVIREON.\n\nModern identity verification infrastructure with role-based authentication, secure cloud architecture, and enterprise-grade management.\n\nSecure\n\nCloud Ready\n\nRole Based\n\nEnterprise"
+      }
+    ],
+    "error": null,
+    "url": "https://vireonn.vercel.app",
+    "maxPages": 3
+  },
+  "job-03c69168-2781-4ebd-89b2-9717ecb0056a": {
+    "id": "job-03c69168-2781-4ebd-89b2-9717ecb0056a",
+    "status": "completed",
+    "progress": {
+      "current": 5,
+      "total": 5
+    },
+    "results": [
+      {
+        "url": "http://adiityaui.vercel.app/",
+        "title": "Aditya's Portfolio",
+        "markdown": "[Aditya.Singh](http://adiityaui.vercel.app/)\n\nSoftware Engineer\n\nCurrently\n\n## Selected work.\n\n[\n\n![RakshaAI](http://adiityaui.vercel.app/raksha_ai_cover.png)\n\n### RakshaAI\n\n](http://adiityaui.vercel.app/projects/raksha-ai)\n\nAI Safety Platform | React | Node.js | WebSocketsMar 2026 – Jun 2026\n\nAn AI-enabled women safety monitoring and real-time emergency response platform featuring automated abnormal activity detection, SMS alerts, and Live GPS tracking.\n\n[View Project](http://adiityaui.vercel.app/projects/raksha-ai)\n\n[\n\n![NexClip](http://adiityaui.vercel.app/p1.png)\n\n### NexClip\n\n](http://adiityaui.vercel.app/projects/nexclip)\n\nAI Video Processing | Next.js | InngestJan 2026 – Present\n\nAn AI pipeline that turns long-form 16:9 videos into 9:16 vertical short clips using Gemini 2.5 Flash, Grok STT, and Inngest.\n\n[View Project](http://adiityaui.vercel.app/projects/nexclip)\n\n[\n\n![Vireon](http://adiityaui.vercel.app/p2.png)\n\n### Vireon\n\n](http://adiityaui.vercel.app/projects/vireon)\n\nFull-Stack Web App | Angular | Node.jsDec 2025 – Feb 2026\n\nA role-based full-stack platform featuring distinct Admin/User experiences, JWT authentication, and MongoDB Atlas.\n\n[View Project](http://adiityaui.vercel.app/projects/vireon)\n\n[\n\n![GitPins](http://adiityaui.vercel.app/p3.png)\n\n### GitPins\n\n](http://adiityaui.vercel.app/projects/gitpins)\n\nFrontend Web App | API Integration | ReactOct 2025 – Dec 2025\n\nPinterest-style GitHub repository discovery experience featuring an infinite-scroll grid and Flask analytics.\n\n[View Project](http://adiityaui.vercel.app/projects/gitpins)\n\n## Work experience.\n\n01\n\n### Frontend Development Intern\n\n– Built 10+ reusable React UI components from design specifications, delivering responsive layouts across devices. – Managed component state and iterated on features based on team feedback to improve product consistency. – Collaborated across sprints to prioritize fixes, refine requirements and support incremental product delivery.\n\n02\n\n### Digital & Automation Support Intern\n\n– Prototyped a customer-facing chatbot concept for common menu and order queries, iterating on prompts and flows. – Explored retrieval-augmented approaches (RAG) using vector databases to surface relevant information for chatbot responses. – Identified lightweight automation opportunities to improve Nicky's Cafe processes.\n\n03\n\n### Influencer Marketing & Brand Partnerships\n\n– Negotiated and managed 35+ brand-influencer campaigns end-to-end and used engagement data to refine campaign decisions. – Closed a co-branding partnership that expanded online collaborations across 30+ partner accounts. – Demonstrated strong stakeholder management and business communication skills.\n\n## Achievements.\n\n### Do you want to start a project together?\n\nadiitya@zohomail.in"
+      },
+      {
+        "url": "http://adiityaui.vercel.app/resume",
+        "title": "About Me — Aditya Kumar Singh",
+        "markdown": "I'm a software engineer based in **Chennai, India** — currently building **NexClip**, an AI-powered pipeline that turns long-form 16:9 videos into 9:16 vertical short clips using Gemini 2.5 Flash, Grok STT, and ImageKit, with Inngest orchestrating the background processing.\n\nI'm pursuing a **B.Tech in Artificial Intelligence and Data Science at Dr. M.G.R. Educational and Research Institute** (CGPA 8.33, class of 2027). I build robust web apps using **React, Angular and TypeScript** on the frontend, and **Node.js, Express, Flask, PostgreSQL and MongoDB** on the backend, alongside AI prompt engineering and RAG/vector-search prototyping.\n\nMy experience includes a **Frontend Development Internship at Slaylewks**, where I built reusable React components and collaborated in sprints, and a **Digital & Automation Support Internship at Nicky's Cafe**, where I prototyped customer chatbots and explored RAG architectures."
+      },
+      {
+        "url": "http://adiityaui.vercel.app/projects/raksha-ai",
+        "title": "RakshaAI — Aditya Kumar Singh",
+        "markdown": "The platform leverages Socket.io to establish persistent, low-latency duplex communication between the user's mobile interface, the backend server, and the centralized response console.\n\nWhen an alert is triggered—via the SOS button, simulated voice activation, or abnormal telemetry triggers—the alert status and GPS coordinates are broadcast instantly to trusted contacts and the emergency console. Geographic data is projected onto an interactive Leaflet-based map, allowing operators to monitor live movements dynamically."
+      },
+      {
+        "url": "http://adiityaui.vercel.app/projects/nexclip",
+        "title": "NexClip — Aditya Kumar Singh",
+        "markdown": "Introduction\n\n## Automating short-form video creation.\n\nNexClip is an intelligent pipeline built to streamline content creation by extracting high-engagement vertical shorts from traditional wide videos.\n\nIt automates transcription with Grok Speech-to-Text (STT) and utilizes Gemini 2.5 Flash to pinpoint the most engaging highlights of the video. It then auto-generates context-aware titles and subtitles to maximize viewer retention.\n\nArchitecture\n\n## Reliable background processing.\n\nVideo manipulation, transcription, and AI evaluation are resource-intensive tasks. To handle them without impacting user response times, NexClip delegates these workloads to async background workers.\n\nInngest acts as the orchestration engine, coordinating tasks, tracking processing states, and handling retries if APIs fail. Face-aware vertical reframing and automated clipping are processed via ImageKit, reducing server rendering load.\n\nGemini 2.5\n\nUsed for smart content selection\n\nAsync\n\nOrchestration handled via Inngest\n\nWhat's inside\n\n## Key features.\n\nShort Clips Pipeline\n\nConvert standard 16:9 landscape videos to 9:16 vertical format on the fly.\n\nGrok STT & Gemini\n\nAutomated transcription coupled with AI analysis to locate high-impact moments.\n\nAsync Orchestration\n\nUses Inngest to organize heavy workloads in background queues with backoff retries.\n\nSmart Trimming\n\nIntelligent clipping and reframing via ImageKit to focus on the speaker.\n\nBuilt with\n\nNext.jsTypeScriptGemini 2.5 FlashGrok STTImageKitInngestPostgreSQL"
+      }
+    ],
+    "error": null,
+    "url": "http://adiityaui.vercel.app/",
+    "maxPages": 5
+  },
+  "job-a7578177-2a24-4596-b06f-7931039a39bc": {
+    "id": "job-a7578177-2a24-4596-b06f-7931039a39bc",
+    "status": "completed",
+    "progress": {
+      "current": 5,
+      "total": 5
+    },
+    "results": [
+      {
+        "url": "http://adiityaui.vercel.app/",
+        "title": "Aditya's Portfolio",
+        "markdown": "[Aditya.Singh](http://adiityaui.vercel.app/)\n\nSoftware Engineer\n\nCurrently\n\n## Selected work.\n\n[\n\n![RakshaAI](http://adiityaui.vercel.app/raksha_ai_cover.png)\n\n### RakshaAI\n\n](http://adiityaui.vercel.app/projects/raksha-ai)\n\nAI Safety Platform | React | Node.js | WebSocketsMar 2026 – Jun 2026\n\nAn AI-enabled women safety monitoring and real-time emergency response platform featuring automated abnormal activity detection, SMS alerts, and Live GPS tracking.\n\n[View Project](http://adiityaui.vercel.app/projects/raksha-ai)\n\n[\n\n![NexClip](http://adiityaui.vercel.app/p1.png)\n\n### NexClip\n\n](http://adiityaui.vercel.app/projects/nexclip)\n\nAI Video Processing | Next.js | InngestJan 2026 – Present\n\nAn AI pipeline that turns long-form 16:9 videos into 9:16 vertical short clips using Gemini 2.5 Flash, Grok STT, and Inngest.\n\n[View Project](http://adiityaui.vercel.app/projects/nexclip)\n\n[\n\n![Vireon](http://adiityaui.vercel.app/p2.png)\n\n### Vireon\n\n](http://adiityaui.vercel.app/projects/vireon)\n\nFull-Stack Web App | Angular | Node.jsDec 2025 – Feb 2026\n\nA role-based full-stack platform featuring distinct Admin/User experiences, JWT authentication, and MongoDB Atlas.\n\n[View Project](http://adiityaui.vercel.app/projects/vireon)\n\n[\n\n![GitPins](http://adiityaui.vercel.app/p3.png)\n\n### GitPins\n\n](http://adiityaui.vercel.app/projects/gitpins)\n\nFrontend Web App | API Integration | ReactOct 2025 – Dec 2025\n\nPinterest-style GitHub repository discovery experience featuring an infinite-scroll grid and Flask analytics.\n\n[View Project](http://adiityaui.vercel.app/projects/gitpins)\n\n## Work experience.\n\n01\n\n### Frontend Development Intern\n\n– Built 10+ reusable React UI components from design specifications, delivering responsive layouts across devices. – Managed component state and iterated on features based on team feedback to improve product consistency. – Collaborated across sprints to prioritize fixes, refine requirements and support incremental product delivery.\n\n02\n\n### Digital & Automation Support Intern\n\n– Prototyped a customer-facing chatbot concept for common menu and order queries, iterating on prompts and flows. – Explored retrieval-augmented approaches (RAG) using vector databases to surface relevant information for chatbot responses. – Identified lightweight automation opportunities to improve Nicky's Cafe processes.\n\n03\n\n### Influencer Marketing & Brand Partnerships\n\n– Negotiated and managed 35+ brand-influencer campaigns end-to-end and used engagement data to refine campaign decisions. – Closed a co-branding partnership that expanded online collaborations across 30+ partner accounts. – Demonstrated strong stakeholder management and business communication skills.\n\n## Achievements.\n\n### Do you want to start a project together?\n\nadiitya@zohomail.in"
+      },
+      {
+        "url": "http://adiityaui.vercel.app/resume",
+        "title": "About Me — Aditya Kumar Singh",
+        "markdown": "I'm a software engineer based in **Chennai, India** — currently building **NexClip**, an AI-powered pipeline that turns long-form 16:9 videos into 9:16 vertical short clips using Gemini 2.5 Flash, Grok STT, and ImageKit, with Inngest orchestrating the background processing.\n\nI'm pursuing a **B.Tech in Artificial Intelligence and Data Science at Dr. M.G.R. Educational and Research Institute** (CGPA 8.33, class of 2027). I build robust web apps using **React, Angular and TypeScript** on the frontend, and **Node.js, Express, Flask, PostgreSQL and MongoDB** on the backend, alongside AI prompt engineering and RAG/vector-search prototyping.\n\nMy experience includes a **Frontend Development Internship at Slaylewks**, where I built reusable React components and collaborated in sprints, and a **Digital & Automation Support Internship at Nicky's Cafe**, where I prototyped customer chatbots and explored RAG architectures."
+      },
+      {
+        "url": "http://adiityaui.vercel.app/projects/raksha-ai",
+        "title": "RakshaAI — Aditya Kumar Singh",
+        "markdown": "The platform leverages Socket.io to establish persistent, low-latency duplex communication between the user's mobile interface, the backend server, and the centralized response console.\n\nWhen an alert is triggered—via the SOS button, simulated voice activation, or abnormal telemetry triggers—the alert status and GPS coordinates are broadcast instantly to trusted contacts and the emergency console. Geographic data is projected onto an interactive Leaflet-based map, allowing operators to monitor live movements dynamically."
+      },
+      {
+        "url": "http://adiityaui.vercel.app/projects/nexclip",
+        "title": "NexClip — Aditya Kumar Singh",
+        "markdown": "Introduction\n\n## Automating short-form video creation.\n\nNexClip is an intelligent pipeline built to streamline content creation by extracting high-engagement vertical shorts from traditional wide videos.\n\nIt automates transcription with Grok Speech-to-Text (STT) and utilizes Gemini 2.5 Flash to pinpoint the most engaging highlights of the video. It then auto-generates context-aware titles and subtitles to maximize viewer retention.\n\nArchitecture\n\n## Reliable background processing.\n\nVideo manipulation, transcription, and AI evaluation are resource-intensive tasks. To handle them without impacting user response times, NexClip delegates these workloads to async background workers.\n\nInngest acts as the orchestration engine, coordinating tasks, tracking processing states, and handling retries if APIs fail. Face-aware vertical reframing and automated clipping are processed via ImageKit, reducing server rendering load.\n\nGemini 2.5\n\nUsed for smart content selection\n\nAsync\n\nOrchestration handled via Inngest\n\nWhat's inside\n\n## Key features.\n\nShort Clips Pipeline\n\nConvert standard 16:9 landscape videos to 9:16 vertical format on the fly.\n\nGrok STT & Gemini\n\nAutomated transcription coupled with AI analysis to locate high-impact moments.\n\nAsync Orchestration\n\nUses Inngest to organize heavy workloads in background queues with backoff retries.\n\nSmart Trimming\n\nIntelligent clipping and reframing via ImageKit to focus on the speaker.\n\nBuilt with\n\nNext.jsTypeScriptGemini 2.5 FlashGrok STTImageKitInngestPostgreSQL"
+      }
+    ],
+    "error": null,
+    "url": "http://adiityaui.vercel.app/",
+    "maxPages": 5
+  }
+}
