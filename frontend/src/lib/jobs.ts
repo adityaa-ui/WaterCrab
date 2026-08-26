@@ -13,7 +13,7 @@ import type {
  * locally hosted backend; otherwise the local dev default is used.
  */
 export const DEFAULT_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  process.env.NEXT_PUBLIC_API_URL || "https://watercrab-1.onrender.com";
 
 /** Prepends https:// when no scheme is present. */
 export function normalizeUrl(value: string): string {

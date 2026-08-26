@@ -60,7 +60,7 @@ export default function PdfUpload({ bare = false }: PdfUploadProps) {
       const formData = new FormData();
       formData.append("file", selected);
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://watercrab-1.onrender.com";
       let text = "";
 
       try {
