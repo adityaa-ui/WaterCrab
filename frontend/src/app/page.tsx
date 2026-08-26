@@ -41,36 +41,34 @@ export default function Home() {
       {/* Sticky Header navigation */}
       <Header onLogin={() => setAuthMode('login')} onSignUp={() => setAuthMode('signup')} userEmail={userEmail ?? undefined} onLogout={logout} />
 
-      <>
       {/* Hero Banner with animated background grid (outside main for full bleed) */}
       <HeroSection onResultsChange={setShowSearchResults} />
 
       {/* Main Page Layout Wrapper */}
-      {!showSearchResults && <main className="relative z-10 mx-auto max-w-[1200px] px-6 pb-20 pt-12">
-        
-        {/* Feature Highlights Grid */}
-        {/* Live product pipeline (#pipeline) */}
-        <PipelineTool initialUrl={undefined} />
+      {!showSearchResults && (
+        <main className="relative z-10 mx-auto max-w-[1200px] px-6 pb-20 pt-12">
+          {/* Live product pipeline (#pipeline) */}
+          <PipelineTool initialUrl={undefined} />
 
+          {/* Feature Highlights Grid */}
+          <FeatureGrid />
 
-        <FeatureGrid />
+          {/* Numeric credibility metrics bar */}
+          <StatsBar />
 
-        {/* Numeric credibility metrics bar */}
-        <StatsBar />
+          {/* Continuous horizontal scrolling brands marquee */}
+          <LogoMarquee />
 
-        {/* Continuous horizontal scrolling brands marquee */}
-        <LogoMarquee />
+          {/* Numbered visual accordion workflows (#01, #02, #03) */}
+          <FeatureShowcase />
 
-        {/* Numbered visual accordion workflows (#01, #02, #03) */}
-        <FeatureShowcase />
+          {/* Multi-tenant environment mock selector */}
+          <ProjectsSection />
 
-        {/* Multi-tenant environment mock selector */}
-        <ProjectsSection />
-
-        {/* Grid showing zero-config integrations */}
-        <AgenticGrid />
-
-      </main>}</>
+          {/* Grid showing zero-config integrations */}
+          <AgenticGrid />
+        </main>
+      )}
 
       {/* Page Footer */}
       <footer className="border-t border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] py-8 font-mono text-[10px] tracking-wider uppercase text-[var(--color-bark-grey)]">
