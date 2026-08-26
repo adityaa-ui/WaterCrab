@@ -544,7 +544,7 @@ export default function PipelineTool({ initialUrl, bare = false, initialMode = "
                       ? "https://example.com/blog"
                       : "https://example.com/item"
                   }
-                  className="w-full rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-4 py-3 text-sm text-[var(--color-charcoal)] placeholder:text-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-4 focus:ring-[rgba(97,95,255,0.15)]"
+                  className="w-full rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-4 py-3 text-sm text-[var(--color-charcoal)] placeholder:text-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-4 focus:ring-[rgba(142,111,75,0.15)]"
                 />
               </div>
 

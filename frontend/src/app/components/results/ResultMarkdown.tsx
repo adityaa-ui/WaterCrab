@@ -20,7 +20,7 @@ export default function ResultMarkdown({ markdown }: ResultMarkdownProps) {
       </div>
       <div className="min-h-0 flex-1 overflow-auto">
         {hasContent ? (
-          <pre className="whitespace-pre p-5 font-mono text-xs leading-[1.7] text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+          <pre className="whitespace-pre p-5 font-mono text-xs leading-[1.7] text-[var(--color-charcoal)] selection:bg-[rgba(142,111,75,0.18)]">
             {markdown}
           </pre>
         ) : (

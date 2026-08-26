@@ -54,7 +54,7 @@ export default function ResultTabs({ active, onChange }: ResultTabsProps) {
             aria-controls="result-panel"
             tabIndex={isActive ? 0 : -1}
             onClick={() => onChange(tab.id)}
-            className={`relative -mb-px border-b-2 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(97,95,255,0.35)] focus-visible:ring-inset ${
+            className={`relative -mb-px border-b-2 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,111,75,0.35)] focus-visible:ring-inset ${
               isActive
                 ? "border-[var(--color-accent)] text-[var(--color-charcoal)]"
                 : "border-transparent text-[var(--color-foreground-muted)] hover:text-[var(--color-charcoal)]"

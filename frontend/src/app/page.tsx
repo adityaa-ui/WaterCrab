@@ -10,6 +10,11 @@ import ProjectsSection from './components/ProjectsSection';
 import AgenticGrid from './components/AgenticGrid';
 import PipelineTool from './components/PipelineTool';
 import AuthModal from './components/AuthModal';
+import {
+  IconBrandGithub,
+  IconBrandLinkedin,
+  IconBriefcase,
+} from "@tabler/icons-react";
 import { subscribeToAuthChanges, logoutFirebase } from '@/lib/firebase';
 
 export default function Home() {
@@ -72,12 +77,40 @@ export default function Home() {
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-4 px-6 md:flex-row">
           <span>© {new Date().getFullYear()} WATERCRAB LABS. ALL RIGHTS RESERVED.</span>
           <div className="flex items-center gap-4 text-[9px] md:text-[10px]">
-            <span>BYOK CLIENT</span>
-            <span className="text-[var(--color-pebble)]">•</span>
-            <span>FIREBASE AUTH</span>
-            <span className="text-[var(--color-pebble)]">•</span>
-            <span>PLAYWRIGHT DRIVER</span>
-          </div>
+  <a
+    href="https://github.com/adityaa-ui"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center gap-1.5 transition-opacity hover:opacity-70"
+  >
+    <IconBrandGithub className="h-3.5 w-3.5" />
+    <span>GITHUB</span>
+  </a>
+
+  <span className="text-[var(--color-pebble)]">•</span>
+
+  <a
+    href="https://www.linkedin.com/in/adityasinghdex"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center gap-1.5 transition-opacity hover:opacity-70"
+  >
+    <IconBrandLinkedin className="h-3.5 w-3.5" />
+    <span>LINKEDIN</span>
+  </a>
+
+  <span className="text-[var(--color-pebble)]">•</span>
+
+  <a
+    href="https://adiityaui.vercel.app/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center gap-1.5 transition-opacity hover:opacity-70"
+  >
+    <IconBriefcase className="h-3.5 w-3.5" />
+    <span>PORTFOLIO</span>
+  </a>
+</div>
         </div>
       </footer>
       {authMode && <AuthModal mode={authMode} close={() => setAuthMode(null)} onAuthenticated={email => setUserEmail(email)} />}

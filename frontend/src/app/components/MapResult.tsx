@@ -87,7 +87,7 @@ export default function MapResult({
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="rounded bg-[rgba(97,95,255,0.08)] px-1.5 py-0.5 font-mono text-[9px] font-semibold text-[var(--color-electric-indigo)]">
+                  <span className="rounded bg-[rgba(142,111,75,0.08)] px-1.5 py-0.5 font-mono text-[9px] font-semibold text-[var(--color-electric-indigo)]">
                     {item.status.toUpperCase()}
                   </span>
                   <span className="truncate font-semibold text-xs text-[var(--color-charcoal)]">

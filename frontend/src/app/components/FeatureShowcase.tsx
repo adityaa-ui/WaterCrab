@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { Terminal } from '@/components/ui/terminal';
 
 // --- DATA DEFINITIONS ---
 
@@ -97,6 +98,157 @@ mcp.StartStdioServer(watercrabTools)`
     }
   }
 ];
+
+const TERMINAL_COMMANDS_MAP: Record<string, Record<string, { commands: string[]; outputs: Record<number, string[]> }>> = {
+  api: {
+    cURL: {
+      commands: [
+        'curl -X POST https://api.watercrab.com/v1/scrape -d url="https://example.com"',
+        'cat result.md'
+      ],
+      outputs: {
+        0: ['HTTP/2 200 OK', '✔ Scraped DOM -> Structured Markdown (412ms)'],
+        1: ['# Example Domain', 'This domain is for use in illustrative examples in documents.']
+      }
+    },
+    'Node.js': {
+      commands: [
+        'npm install watercrab',
+        'node scrape.js'
+      ],
+      outputs: {
+        0: ['added 1 package in 1.2s'],
+        1: ['WaterCrab client connected.', 'Markdown output generated successfully (1.4KB).']
+      }
+    },
+    Python: {
+      commands: [
+        'pip install watercrab',
+        'python scrape.py'
+      ],
+      outputs: {
+        0: ['Successfully installed watercrab-1.0.0'],
+        1: ['Fetching https://example.com...', 'Clean markdown ready.']
+      }
+    },
+    Go: {
+      commands: [
+        'go get github.com/watercrab/sdk-go',
+        'go run main.go'
+      ],
+      outputs: {
+        0: ['go: downloading github.com/watercrab/sdk-go v1.0.0'],
+        1: ['res.Markdown -> # Example Domain']
+      }
+    }
+  },
+  sdks: {
+    cURL: {
+      commands: [
+        'npm install @watercrab/sdk',
+        'pip install watercrab-sdk'
+      ],
+      outputs: {
+        0: ['added 1 package in 1.5s'],
+        1: ['Successfully installed watercrab-sdk-1.2.0']
+      }
+    },
+    'Node.js': {
+      commands: [
+        'import { WaterCrabClient } from "@watercrab/sdk"',
+        'const client = new WaterCrabClient()'
+      ],
+      outputs: {
+        0: ['✔ Module loaded'],
+        1: ['Client instance created with TypeScript types.']
+      }
+    },
+    Python: {
+      commands: [
+        'python -c "from watercrab import Client; print(Client())"'
+      ],
+      outputs: {
+        0: ['<WaterCrab Native Python Client object at 0x7f9a80>']
+      }
+    },
+    Go: {
+      commands: [
+        'go doc github.com/watercrab/watercrab-go'
+      ],
+      outputs: {
+        0: ['package watercrab // import "github.com/watercrab/watercrab-go"']
+      }
+    }
+  },
+  webhooks: {
+    cURL: {
+      commands: [
+        'curl -X POST https://api.yourdomain.com/webhooks/watercrab'
+      ],
+      outputs: {
+        0: ['HTTP/1.1 200 OK', 'Webhook payload received: crawl_job_completed']
+      }
+    },
+    'Node.js': {
+      commands: [
+        'node webhook-server.js'
+      ],
+      outputs: {
+        0: ['[Express] Webhook endpoint ready on port 3000', '✔ x-watercrab-signature verified successfully']
+      }
+    },
+    Python: {
+      commands: [
+        'python webhook.py'
+      ],
+      outputs: {
+        0: ['[Flask] Webhook worker running...', 'Payload HMAC SHA256 verified: OK']
+      }
+    },
+    Go: {
+      commands: [
+        'go run webhook.go'
+      ],
+      outputs: {
+        0: ['[Go Webhook] Listening on :8080', 'isValid := watercrab.VerifyWebhook(payload, sig) -> true']
+      }
+    }
+  },
+  mcp: {
+    cURL: {
+      commands: [
+        'npx -y @watercrab/mcp-server --api-key YOUR_KEY'
+      ],
+      outputs: {
+        0: ['✔ Initializing Model Context Protocol server...', '✔ MCP Server active on stdio. Listening for agent calls...']
+      }
+    },
+    'Node.js': {
+      commands: [
+        'node mcp-server.js'
+      ],
+      outputs: {
+        0: ['McpServer initialized for WaterCrab', 'Tools registered: [scrape, extract, crawl]']
+      }
+    },
+    Python: {
+      commands: [
+        'python -m mcp.server'
+      ],
+      outputs: {
+        0: ['MCP Python handler bound to WaterCrab API', 'Connected to Claude Desktop / Cursor']
+      }
+    },
+    Go: {
+      commands: [
+        'go run mcp_main.go'
+      ],
+      outputs: {
+        0: ['mcp: Starting stdio MCP channel...', 'Connected.']
+      }
+    }
+  }
+};
 
 // Section 2: Crawl Pipelines
 interface CrawlPage {
@@ -280,38 +432,47 @@ export default function FeatureShowcase() {
           </div>
         </div>
 
-        {/* Right Column: Code Terminal */}
-        <div className="lg:col-span-7">
-          <div className="overflow-hidden rounded-2xl border border-[var(--color-stone-mist)] bg-[#121214] shadow-xl">
-            {/* Terminal Header */}
-            <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.06)] bg-[#1a1a1e] px-4 py-3">
-              <div className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
-                <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
-                <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
-              </div>
-              <div className="flex items-center gap-2">
-                {['cURL', 'Node.js', 'Python', 'Go'].map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => setSec1Lang(lang)}
-                    className={`rounded px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] transition ${
-                      sec1Lang === lang 
-                        ? 'bg-[rgba(255,255,255,0.08)] text-white' 
-                        : 'text-[var(--color-pebble)] hover:text-white'
-                    }`}
-                  >
-                    {lang}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Terminal Code Area */}
-            <div className="p-5 font-mono text-[11px] md:text-[12px] leading-relaxed text-zinc-300 overflow-x-auto min-h-[190px]">
-              <pre>{sec1Data.code ? sec1Data.code[sec1Lang] : ''}</pre>
+        {/* Right Column: Interactive Terminal */}
+        <div className="lg:col-span-7 space-y-3">
+          <div className="flex items-center justify-between rounded-xl border border-[var(--color-stone-mist)] bg-[#121214] px-4 py-2 shadow-sm">
+            <span className="font-mono text-[11px] text-neutral-400 font-semibold tracking-wider uppercase">
+              SDK & CLI Executables
+            </span>
+            <div className="flex items-center gap-1.5">
+              {['cURL', 'Node.js', 'Python', 'Go'].map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => setSec1Lang(lang)}
+                  className={`rounded px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] transition ${
+                    sec1Lang === lang 
+                      ? 'bg-[var(--color-electric-indigo)] text-white shadow' 
+                      : 'text-neutral-400 hover:text-white hover:bg-[#1a1a1e]'
+                  }`}
+                >
+                  {lang}
+                </button>
+              ))}
             </div>
           </div>
+
+          <Terminal
+            key={`${sec1Active}-${sec1Lang}`}
+            commands={
+              TERMINAL_COMMANDS_MAP[sec1Active]?.[sec1Lang]?.commands || [
+                'curl -X POST https://api.watercrab.com/v1/scrape'
+              ]
+            }
+            outputs={
+              TERMINAL_COMMANDS_MAP[sec1Active]?.[sec1Lang]?.outputs || {
+                0: ['✔ Scraping completed']
+              }
+            }
+            username="watercrab-api"
+            className="w-full max-w-full px-0"
+            typingSpeed={40}
+            delayBetweenCommands={800}
+            enableSound={false}
+          />
         </div>
       </section>
 
@@ -496,7 +657,7 @@ export default function FeatureShowcase() {
                     node.status === 'completed' 
                       ? 'border-green-300 shadow-sm' 
                       : node.status === 'active' 
-                      ? 'border-[var(--color-electric-indigo)] ring-2 ring-[rgba(97,95,255,0.15)] shadow-md' 
+                      ? 'border-[var(--color-electric-indigo)] ring-2 ring-[rgba(142,111,75,0.15)] shadow-md' 
                       : 'border-[var(--color-stone-mist)] opacity-60'
                   }`}>
                     <div className="flex items-center gap-3">

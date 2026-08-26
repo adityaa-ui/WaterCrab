@@ -169,7 +169,7 @@ function renderInline(text: string, keyBase: string): React.ReactNode[] {
       out.push(
         <code
           key={`${keyBase}-c${idx++}`}
-          className="rounded bg-[rgba(97,95,255,0.09)] px-1 py-0.5 font-mono text-[0.86em] text-[var(--color-charcoal)]"
+          className="rounded bg-[rgba(142,111,75,0.09)] px-1 py-0.5 font-mono text-[0.86em] text-[var(--color-charcoal)]"
         >
           {token.slice(1, -1)}
         </code>

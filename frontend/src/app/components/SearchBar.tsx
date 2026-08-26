@@ -46,7 +46,7 @@ function hostnameOf(url: string) {
 
 function SearchResultCard({ result, index, onCopyUrl }: { result: ResultRow; index: number; onCopyUrl: (url: string) => void }) {
   return (
-    <article className="group animate-fadeIn overflow-hidden rounded-2xl border border-[var(--color-stone-mist)] bg-white shadow-[0_2px_12px_rgba(41,37,36,0.07)] transition hover:border-[var(--color-electric-indigo)] hover:shadow-[0_4px_24px_rgba(97,95,255,0.12)]">
+    <article className="group animate-fadeIn overflow-hidden rounded-2xl border border-[var(--color-stone-mist)] bg-white shadow-[0_2px_12px_rgba(41,37,36,0.07)] transition hover:border-[var(--color-electric-indigo)] hover:shadow-[0_4px_24px_rgba(142,111,75,0.12)]">
       {/* Card header */}
       <div className="flex items-start justify-between gap-3 border-b border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-5 py-3">
         <div className="flex min-w-0 items-center gap-2">
@@ -111,7 +111,7 @@ function SearchResultCard({ result, index, onCopyUrl }: { result: ResultRow; ind
 
 function MapResultCard({ result, index, onCopyUrl }: { result: ResultRow; index: number; onCopyUrl: (url: string) => void }) {
   return (
-    <article className="group animate-fadeIn flex items-center gap-4 overflow-hidden rounded-2xl border border-[var(--color-stone-mist)] bg-white px-5 py-4 shadow-[0_2px_8px_rgba(41,37,36,0.06)] transition hover:border-[var(--color-electric-indigo)] hover:shadow-[0_4px_16px_rgba(97,95,255,0.10)]">
+    <article className="group animate-fadeIn flex items-center gap-4 overflow-hidden rounded-2xl border border-[var(--color-stone-mist)] bg-white px-5 py-4 shadow-[0_2px_8px_rgba(41,37,36,0.06)] transition hover:border-[var(--color-electric-indigo)] hover:shadow-[0_4px_16px_rgba(142,111,75,0.10)]">
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--color-electric-indigo)]/10 font-mono text-[10px] font-bold text-[var(--color-electric-indigo)]">
         {index + 1}
       </span>

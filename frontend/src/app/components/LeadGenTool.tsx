@@ -271,7 +271,7 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://example.com/contact or https://stripe.com"
                   required
-                  className="w-full flex-1 rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-4 py-3.5 text-sm text-[var(--color-charcoal)] placeholder:text-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-4 focus:ring-[rgba(97,95,255,0.15)]"
+                  className="w-full flex-1 rounded-xl border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-4 py-3.5 text-sm text-[var(--color-charcoal)] placeholder:text-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-4 focus:ring-[rgba(142,111,75,0.15)]"
                 />
                 <button
                   type="submit"
@@ -306,9 +306,9 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
               onDrop={handleDrop}
               className={`relative flex min-h-[180px] w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition select-none ${
                 isDragging
-                  ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.06)]"
+                  ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.06)]"
                   : loading
-                  ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.04)] cursor-wait"
+                  ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.04)] cursor-wait"
                   : "border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] hover:border-[var(--color-electric-indigo)]"
               }`}
             >
@@ -428,7 +428,7 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
               <button
                 type="button"
                 onClick={exportCSV}
-                className="flex items-center gap-1.5 rounded-lg border border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.06)] px-3 py-2 font-mono text-xs font-semibold text-[var(--color-electric-indigo)] hover:bg-[rgba(97,95,255,0.12)]"
+                className="flex items-center gap-1.5 rounded-lg border border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.06)] px-3 py-2 font-mono text-xs font-semibold text-[var(--color-electric-indigo)] hover:bg-[rgba(142,111,75,0.12)]"
               >
                 <DownloadIcon className="h-3.5 w-3.5" />
                 Export CSV
@@ -459,7 +459,7 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
               onClick={() => setActiveLeadTab("emails")}
               className={`flex flex-col rounded-2xl border p-4 text-left transition ${
                 activeLeadTab === "emails"
-                  ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.05)] shadow-sm"
+                  ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.05)] shadow-sm"
                   : "border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] hover:border-[var(--color-electric-indigo)]"
               }`}
             >
@@ -476,7 +476,7 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
               onClick={() => setActiveLeadTab("phones")}
               className={`flex flex-col rounded-2xl border p-4 text-left transition ${
                 activeLeadTab === "phones"
-                  ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.05)] shadow-sm"
+                  ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.05)] shadow-sm"
                   : "border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] hover:border-[var(--color-electric-indigo)]"
               }`}
             >
@@ -493,7 +493,7 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
               onClick={() => setActiveLeadTab("socials")}
               className={`flex flex-col rounded-2xl border p-4 text-left transition ${
                 activeLeadTab === "socials"
-                  ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.05)] shadow-sm"
+                  ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.05)] shadow-sm"
                   : "border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] hover:border-[var(--color-electric-indigo)]"
               }`}
             >
@@ -510,7 +510,7 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
               onClick={() => setActiveLeadTab("websites")}
               className={`flex flex-col rounded-2xl border p-4 text-left transition ${
                 activeLeadTab === "websites"
-                  ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.05)] shadow-sm"
+                  ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.05)] shadow-sm"
                   : "border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] hover:border-[var(--color-electric-indigo)]"
               }`}
             >
@@ -601,7 +601,7 @@ export default function LeadGenTool({ bare = false, initialUrl }: LeadGenToolPro
                           </td>
                           <td className="py-3 text-[var(--color-bark-grey)]">{e.domain}</td>
                           <td className="py-3">
-                            <span className="rounded bg-[rgba(97,95,255,0.08)] px-2 py-0.5 text-[10px] font-semibold text-[var(--color-electric-indigo)]">
+                            <span className="rounded bg-[rgba(142,111,75,0.08)] px-2 py-0.5 text-[10px] font-semibold text-[var(--color-electric-indigo)]">
                               {e.type}
                             </span>
                           </td>

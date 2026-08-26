@@ -92,7 +92,7 @@ export default function ResultHeader({
           <button
             type="button"
             onClick={onExtract}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-accent)] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-white shadow-sm transition hover:bg-[var(--color-deep-violet)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(97,95,255,0.45)]"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--color-accent)] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-white shadow-sm transition hover:bg-[var(--color-deep-violet)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,111,75,0.45)]"
           >
             <SparkIcon className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Extract data</span>
@@ -101,7 +101,7 @@ export default function ResultHeader({
           <Dropdown
             label="More result actions"
             align="right"
-            buttonClassName="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-paper-white)] text-[var(--color-foreground-secondary)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-charcoal)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(97,95,255,0.35)]"
+            buttonClassName="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-paper-white)] text-[var(--color-foreground-secondary)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-charcoal)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,111,75,0.35)]"
             button={() => <MoreIcon className="h-4 w-4" />}
           >
             {close => (

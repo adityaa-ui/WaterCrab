@@ -42,7 +42,7 @@ export default function ExtractResult({ data, onCopy, copied }: ExtractResultPro
       </div>
 
       <div className="max-h-[520px] flex-1 overflow-auto bg-[var(--color-warm-bone)] p-5">
-        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(142,111,75,0.18)]">
           {json}
         </pre>
       </div>

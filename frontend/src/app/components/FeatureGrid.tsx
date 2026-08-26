@@ -56,7 +56,7 @@ export default function FeatureGrid() {
             className="group flex h-full flex-col rounded-[8px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-electric-indigo)] hover:shadow-sm"
           >
             {/* Icon */}
-            <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] text-[var(--color-charcoal)] transition-colors duration-300 group-hover:bg-[rgba(97,95,255,0.08)] group-hover:text-[var(--color-electric-indigo)]">
+            <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] text-[var(--color-charcoal)] transition-colors duration-300 group-hover:bg-[rgba(142,111,75,0.08)] group-hover:text-[var(--color-electric-indigo)]">
               {card.icon}
             </div>
 

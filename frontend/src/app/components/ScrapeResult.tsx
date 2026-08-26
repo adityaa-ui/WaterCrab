@@ -85,7 +85,7 @@ export default function ScrapeResult({
 
       <div className="max-h-[520px] flex-1 overflow-auto p-5">
         {activeTab === "markdown" ? (
-          <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+          <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(142,111,75,0.18)]">
             {markdown}
           </pre>
         ) : (

@@ -36,7 +36,7 @@ export default function ResultError({
         <button
           type="button"
           onClick={onRetry}
-          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-paper-white)] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-charcoal)] shadow-sm transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(97,95,255,0.35)]"
+          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-paper-white)] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-charcoal)] shadow-sm transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,111,75,0.35)]"
         >
           <RefreshIcon className="h-3.5 w-3.5" />
           Try again

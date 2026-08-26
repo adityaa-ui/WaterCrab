@@ -10,14 +10,14 @@ interface OverviewViewProps {
 }
 
 const TOOL_BADGES: Record<string, { color: string; bg: string; label: string }> = {
-  search:  { color: "text-[var(--color-sapphire-link)]",    bg: "bg-[rgba(0,126,187,0.1)]",    label: "Live Index" },
-  scrape:  { color: "text-[var(--color-electric-indigo)]",  bg: "bg-[rgba(97,95,255,0.1)]",    label: "Markdown" },
-  map:     { color: "text-[var(--color-tide-teal)]",        bg: "bg-[rgba(34,184,205,0.1)]",   label: "Topology" },
-  crawl:   { color: "text-[var(--color-terracotta)]",       bg: "bg-[rgba(217,119,87,0.1)]",   label: "Multi-page" },
-  leadgen: { color: "text-[var(--color-electric-indigo)]",  bg: "bg-[rgba(97,95,255,0.12)] font-bold", label: "Lead Gen" },
-  extract: { color: "text-[var(--color-lichen-green)]",     bg: "bg-[rgba(94,165,0,0.1)]",     label: "Structured" },
+  search:  { color: "text-[var(--color-sapphire-link)]",    bg: "bg-[rgba(163,117,59,0.14)]",    label: "Live Index" },
+  scrape:  { color: "text-[var(--color-electric-indigo)]",  bg: "bg-[rgba(142,111,75,0.1)]",    label: "Markdown" },
+  map:     { color: "text-[var(--color-tide-teal)]",        bg: "bg-[rgba(95,131,119,0.14)]",   label: "Topology" },
+  crawl:   { color: "text-[var(--color-terracotta)]",       bg: "bg-[rgba(196,118,79,0.14)]",   label: "Multi-page" },
+  leadgen: { color: "text-[var(--color-electric-indigo)]",  bg: "bg-[rgba(142,111,75,0.12)] font-bold", label: "Lead Gen" },
+  extract: { color: "text-[var(--color-lichen-green)]",     bg: "bg-[rgba(124,139,87,0.14)]",    label: "Structured" },
   files:   { color: "text-[var(--color-bark-grey)]",        bg: "bg-[var(--color-warm-bone)]", label: "PDF Parse" },
-  overview:{ color: "text-[var(--color-accent)]",           bg: "bg-[rgba(97,95,255,0.1)]",    label: "Home" },
+  overview:{ color: "text-[var(--color-accent)]",           bg: "bg-[rgba(142,111,75,0.1)]",    label: "Home" },
 };
 
 const TIPS = [
@@ -56,7 +56,7 @@ export default function OverviewView({ email, onNavigate }: OverviewViewProps) {
                 key={item.id}
                 type="button"
                 onClick={() => onNavigate(item.viewId as ViewId)}
-                className="group flex flex-col items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-left transition hover:border-[var(--color-accent)] hover:shadow-[0_4px_16px_rgba(97,95,255,0.1)]"
+                className="group flex flex-col items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-left transition hover:border-[var(--color-accent)] hover:shadow-[0_4px_16px_rgba(142,111,75,0.1)]"
               >
                 <div className="flex w-full items-center justify-between">
                   <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${badge?.bg ?? "bg-[var(--color-warm-bone)]"} ${badge?.color ?? "text-[var(--color-accent)]"}`}>
@@ -91,7 +91,7 @@ export default function OverviewView({ email, onNavigate }: OverviewViewProps) {
               key={i}
               className="flex items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
             >
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[rgba(97,95,255,0.08)] text-[var(--color-accent)]">
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[rgba(142,111,75,0.08)] text-[var(--color-accent)]">
                 {tip.icon}
               </span>
               <div>

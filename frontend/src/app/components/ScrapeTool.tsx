@@ -160,7 +160,7 @@ export default function ScrapeTool() {
 
         <div className="flex-1 min-h-[360px] max-h-[520px] overflow-auto p-5 rounded-b-[14px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] shadow-[0_16px_40px_rgba(41,37,36,0.06)]">
           {activeTab === "markdown" ? (
-            <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+            <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(142,111,75,0.18)]">
               {result.markdown}
             </pre>
           ) : (
@@ -200,7 +200,7 @@ export default function ScrapeTool() {
                 onBlur={(e) => validate(e.target.value)}
                 placeholder="https://example.com/article"
                 disabled={loading}
-                className={`w-full rounded-lg border px-10 py-3 text-[var(--color-charcoal)] placeholder-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-2 focus:ring-[rgba(97,95,255,0.18)] transition ${
+                className={`w-full rounded-lg border px-10 py-3 text-[var(--color-charcoal)] placeholder-[var(--color-pebble)] focus:border-[var(--color-electric-indigo)] focus:outline-none focus:ring-2 focus:ring-[rgba(142,111,75,0.18)] transition ${
                   urlError ? "border-[var(--color-alarm-red)]" : "border-[var(--color-stone-mist)]"
                 } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                 aria-invalid={urlError ? "true" : "false"}

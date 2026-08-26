@@ -137,11 +137,11 @@ export default function PdfUpload({ bare = false }: PdfUploadProps) {
       onDrop={handleDrop}
       className={`relative flex min-h-56 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center transition select-none ${
         isDragging
-          ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.06)]"
+          ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.06)]"
           : state === "done"
           ? "border-[var(--color-success)] bg-[rgba(94,165,0,0.04)] cursor-default"
           : state === "uploading"
-          ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.04)] cursor-wait"
+          ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.04)] cursor-wait"
           : "border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] hover:border-[var(--color-electric-indigo)]"
       }`}
     >
@@ -262,7 +262,7 @@ export default function PdfUpload({ bare = false }: PdfUploadProps) {
 
       {/* Extracted text */}
       <div className="max-h-[500px] overflow-y-auto p-5">
-        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+        <pre className="whitespace-pre-wrap font-mono text-[12px] leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(142,111,75,0.18)]">
           {parsed.text}
         </pre>
       </div>

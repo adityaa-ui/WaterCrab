@@ -106,7 +106,7 @@ export default function ResultWorkspace({
             onClick={copy}
             aria-label={`Copy ${activeLabel}`}
             title={copied ? "Copied" : `Copy ${activeLabel}`}
-            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(97,95,255,0.35)] ${
+            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,111,75,0.35)] ${
               copied
                 ? "border-[rgba(94,165,0,0.35)] bg-[rgba(94,165,0,0.08)] text-[var(--color-success)]"
                 : "border-[var(--color-border)] bg-[var(--color-paper-white)] text-[var(--color-foreground-secondary)] hover:border-[var(--color-accent)] hover:text-[var(--color-charcoal)]"
@@ -119,7 +119,7 @@ export default function ResultWorkspace({
             onClick={download}
             aria-label={`Download ${activeLabel}`}
             title={`Download ${activeLabel}`}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-paper-white)] text-[var(--color-foreground-secondary)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-charcoal)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(97,95,255,0.35)]"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-paper-white)] text-[var(--color-foreground-secondary)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-charcoal)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,111,75,0.35)]"
           >
             <DownloadIcon className="h-3.5 w-3.5" />
           </button>

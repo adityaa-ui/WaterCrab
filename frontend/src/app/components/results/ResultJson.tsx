@@ -85,7 +85,7 @@ export default function ResultJson({ jsonText }: ResultJsonProps) {
       </div>
       <div className="min-h-0 flex-1 overflow-auto bg-[var(--color-paper-white)]/50">
         {hasContent ? (
-          <pre className="whitespace-pre p-5 font-mono text-xs leading-[1.7] selection:bg-[rgba(97,95,255,0.18)]">
+          <pre className="whitespace-pre p-5 font-mono text-xs leading-[1.7] selection:bg-[rgba(142,111,75,0.18)]">
             {tokenize(jsonText, "json")}
           </pre>
         ) : (

@@ -3,16 +3,16 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const GRID_CELL = 120;   // must match the CSS repeating-gradient cell size
-const CHAR_HEIGHT = 48;  // video element height — straddles the 1px grid line
-const CHAR_WIDTH = 72;   // video element width
-const SPEED = 80;        // px / second
-const GAP_LEAD = 24;     // how many px "ahead" of the character centre the gap extends
+const GRID_CELL = 120;    // must match the CSS repeating-gradient cell size
+const CHAR_H = 56;        // display height
+const CHAR_W = 84;        // display width  — 3:2 aspect ratio
+const SPEED = 80;         // px / second
+const GAP_LEAD = 28;      // px ahead of char centre where gap extends
 
-const BACK_SRCS = ["/backeater.mp4", "/backeater1.mp4"];
+const BACK_SRCS  = ["/backeater.mp4",  "/backeater1.mp4"];
 const FRONT_SRCS = ["/fronteater.mp4", "/fronteater1.mp4"];
 
-// Random tints via CSS hue-rotate — gives each critter a unique colour
+// Subtle colour tints per critter
 const TINTS = [
   "hue-rotate(0deg)",
   "hue-rotate(55deg)",
@@ -24,26 +24,25 @@ const TINTS = [
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface CrawlerState {
   id: number;
-  row: number;                     // y coord of the grid line being crawled
-  x: number;                       // left edge of the video element
+  row: number;
+  x: number;
   phase: "back" | "front";
   src: string;
   tint: string;
-  gap: [number, number] | null;    // [gapStart, gapEnd] in px, null = no gap
+  gap: [number, number] | null;
   containerWidth: number;
 }
 
-// ─── Helpers (pure, no side-effects) ─────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
-
 function pickRow(h: number): number {
   const max = Math.floor(h / GRID_CELL);
   return (1 + Math.floor(Math.random() * Math.max(1, max - 1))) * GRID_CELL;
 }
 
-// ─── Gap mask — paint over the 1px CSS grid line in the eaten segment ─────────
+// ─── Gap mask ─────────────────────────────────────────────────────────────────
 function GridGap({ gap, row }: { gap: [number, number]; row: number }) {
   const w = Math.max(0, gap[1] - gap[0]);
   if (w <= 0) return null;
@@ -51,52 +50,143 @@ function GridGap({ gap, row }: { gap: [number, number]; row: number }) {
     <div
       className="absolute pointer-events-none"
       style={{
-        // top of the 1px grid line = (row - 1); cover it with 3px
         top: row - 1,
         left: gap[0],
         width: w,
         height: 3,
-        backgroundColor: "var(--color-warm-bone)",   // Dynamically resolves to theme background (light #fafaf9 / dark #0e0d0b)
+        backgroundColor: "var(--color-warm-bone)",
       }}
     />
   );
 }
 
-// ─── Video character ──────────────────────────────────────────────────────────
+// ─── HD Canvas Crawler ────────────────────────────────────────────────────────
+// Renders video frames into a DPR-scaled canvas with chroma-key compositing
+// so the white MP4 background is removed pixel-perfectly on any theme colour.
 function Crawler({ state, isDark }: { state: CrawlerState; isDark: boolean }) {
   const { row, x, phase, src, tint } = state;
-  // Invert video in dark mode so white video background becomes black and blends transparently with dark canvas.
-  // Boost contrast & brightness slightly in light mode to crush any compression off-whites to pure #ffffff for seamless mix-blend-multiply.
-  const filterStyle = isDark
-    ? `invert(1) ${tint}`
-    : `contrast(1.08) brightness(1.04) ${tint}`;
+  const videoRef  = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Store the rAF id so cleanup is reliable
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const video  = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    // ── DPR-aware canvas sizing ───────────────────────────────────────────
+    const dpr = typeof window !== "undefined" ? (window.devicePixelRatio || 1) : 1;
+    const bufW = Math.round(CHAR_W * dpr);
+    const bufH = Math.round(CHAR_H * dpr);
+    canvas.width  = bufW;
+    canvas.height = bufH;
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    // Scale all draw calls by DPR so 1 CSS pixel = 1 physical pixel on Retina
+    ctx.scale(dpr, dpr);
+
+    // ── Chroma-key constants ──────────────────────────────────────────────
+    // White threshold: pixels above this brightness are background (remove them)
+    const WHITE_THRESHOLD = 200;
+    // Feather range: pixels in [WHITE_THRESHOLD - FEATHER, WHITE_THRESHOLD]
+    // get a graduated alpha for anti-aliased edges
+    const FEATHER = 40;
+
+    let running = true;
+
+    const renderFrame = () => {
+      if (!running) return;
+
+      if (video.readyState >= 2) {
+        // Draw the video frame at the logical size — DPR scaling handles the rest
+        ctx.clearRect(0, 0, CHAR_W, CHAR_H);
+        ctx.drawImage(video, 0, 0, CHAR_W, CHAR_H);
+
+        const imgData = ctx.getImageData(0, 0, bufW, bufH);
+        const d = imgData.data;
+        const len = d.length;
+
+        for (let i = 0; i < len; i += 4) {
+          const r = d[i];
+          const g = d[i + 1];
+          const b = d[i + 2];
+
+          // Luminance-weighted brightness (perceptual)
+          const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+          if (lum > WHITE_THRESHOLD) {
+            // Fully transparent — this IS the background
+            d[i + 3] = 0;
+          } else if (lum > WHITE_THRESHOLD - FEATHER) {
+            // Soft-edge feathering: partial alpha for anti-aliased borders
+            const t = (lum - (WHITE_THRESHOLD - FEATHER)) / FEATHER; // 0→1 toward bg
+            d[i + 3] = Math.round(d[i + 3] * (1 - t * t)); // quadratic falloff
+          } else if (isDark) {
+            // In dark mode: invert near-black ink pixels → near-white so
+            // they read clearly against the dark background.
+            // Uses per-channel inversion so coloured details stay vibrant.
+            const darknessRatio = 1 - lum / (WHITE_THRESHOLD - FEATHER);
+            if (darknessRatio > 0.55) {
+              const lift = Math.round(180 * darknessRatio);
+              d[i]     = Math.min(255, r + lift);
+              d[i + 1] = Math.min(255, g + lift);
+              d[i + 2] = Math.min(255, b + lift);
+            }
+          }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      rafRef.current = requestAnimationFrame(renderFrame);
+    };
+
+    rafRef.current = requestAnimationFrame(renderFrame);
+
+    return () => {
+      running = false;
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [isDark, src]);
 
   return (
     <div
       className="absolute pointer-events-none"
       style={{
-        top: row - CHAR_HEIGHT / 2,   // vertically centre on the grid line
-        left: x,
-        width: CHAR_WIDTH,
-        height: CHAR_HEIGHT,
+        top:    row - CHAR_H / 2,
+        left:   x,
+        width:  CHAR_W,
+        height: CHAR_H,
         zIndex: 2,
-        mixBlendMode: isDark ? "screen" : "multiply", // Removes video background square in both themes
-        // fronteater is mirrored so it always faces its travel direction (right→left)
         transform: phase === "back" ? "none" : "scaleX(-1)",
+        // Crisp scaling — the canvas buffer is already at native resolution
+        imageRendering: "auto",
       }}
     >
+      {/* Hidden source video — we never display this directly */}
       <video
+        ref={videoRef}
         key={src}
         src={src}
         autoPlay
         loop
         muted
         playsInline
+        style={{ display: "none" }}
+      />
+      {/* HD canvas output — CSS size = logical size, buffer size = physical pixels */}
+      <canvas
+        ref={canvasRef}
         style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-          filter: filterStyle,
+          display: "block",
+          width:   "100%",
+          height:  "100%",
+          filter:  tint,
+          // Prevent browser from blurring the already-sharp canvas pixels
+          imageRendering: "auto",
         }}
       />
     </div>
@@ -108,41 +198,36 @@ export default function GridEater() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
-  // All state is initialised empty — nothing runs until client useEffect
   const [crawlers, setCrawlers] = useState<CrawlerState[]>([]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    let mounted = true;
+    let mounted    = true;
     let activeCount = 0;
     const MAX_CONCURRENT = 2;
-    // Map from animation-id → rAF handle
-    const rafMap = new Map<number, number>();
-    let idCounter = 0;
-    // Capture el as non-null so nested functions can access it safely
-    const container: HTMLDivElement = el;
+    const rafMap   = new Map<number, number>();
+    let idCounter  = 0;
+    const container = el;
 
-    // ── Spawn one full lifecycle (back-pass then front-pass) ──────────────────
     function spawnOne(onFinished: () => void) {
       const id = idCounter++;
-      const w = container.offsetWidth;
-      const h = container.offsetHeight;
+      const w  = container.offsetWidth;
+      const h  = container.offsetHeight;
       if (w === 0 || h === 0) { onFinished(); return; }
 
-      const row = pickRow(h);
-      const tint = pick(TINTS);
+      const row     = pickRow(h);
+      const tint    = pick(TINTS);
       const backSrc = pick(BACK_SRCS);
 
-      // Add crawler to state
       setCrawlers(prev => [...prev, {
-        id, row, x: -CHAR_WIDTH, phase: "back",
+        id, row, x: -CHAR_W, phase: "back",
         src: backSrc, tint, gap: null, containerWidth: w,
       }]);
 
       // ── Back pass: left → right ───────────────────────────────────────────
-      let xPos = -CHAR_WIDTH;
+      let xPos  = -CHAR_W;
       let lastT: number | null = null;
 
       function animBack(ts: number) {
@@ -151,8 +236,7 @@ export default function GridEater() {
         xPos += SPEED * ((ts - lastT) / 1000);
         lastT = ts;
 
-        const centre = xPos + CHAR_WIDTH / 2;
-        // gap goes from x=0 to just behind the character (leave a lead gap in front)
+        const centre = xPos + CHAR_W / 2;
         const gapEnd = Math.max(0, centre - GAP_LEAD);
         const gap: [number, number] = [0, gapEnd];
 
@@ -160,11 +244,10 @@ export default function GridEater() {
           c.id === id ? { ...c, x: xPos, gap } : c
         ));
 
-        if (xPos < w + CHAR_WIDTH) {
+        if (xPos < w + CHAR_W) {
           rafMap.set(id, requestAnimationFrame(animBack));
         } else {
           rafMap.delete(id);
-          // Short pause before front eater appears
           setTimeout(() => mounted && startFront(), 400);
         }
       }
@@ -174,7 +257,7 @@ export default function GridEater() {
       // ── Front pass: right → left ──────────────────────────────────────────
       function startFront() {
         const frontSrc = pick(FRONT_SRCS);
-        let fx = w + CHAR_WIDTH;
+        let fx = w + CHAR_W;
         let lastFt: number | null = null;
 
         setCrawlers(prev => prev.map(c =>
@@ -189,8 +272,7 @@ export default function GridEater() {
           fx -= SPEED * ((ts - lastFt) / 1000);
           lastFt = ts;
 
-          const centre2 = fx + CHAR_WIDTH / 2;
-          // Gap shrinks from the right: the segment to the right of fronteater is healed
+          const centre2 = fx + CHAR_W / 2;
           const remainingEnd = Math.max(0, centre2 + GAP_LEAD);
           const gap2: [number, number] = [0, remainingEnd];
 
@@ -198,11 +280,10 @@ export default function GridEater() {
             c.id === id ? { ...c, x: fx, gap: gap2 } : c
           ));
 
-          if (fx > -CHAR_WIDTH * 2) {
+          if (fx > -CHAR_W * 2) {
             rafMap.set(id, requestAnimationFrame(animFront));
           } else {
             rafMap.delete(id);
-            // Remove crawler from state and notify scheduler
             setCrawlers(prev => prev.filter(c => c.id !== id));
             onFinished();
           }
@@ -212,21 +293,18 @@ export default function GridEater() {
       }
     }
 
-    // ── Scheduler: keep MAX_CONCURRENT crawlers alive ─────────────────────────
     function trySpawn() {
       if (!mounted || activeCount >= MAX_CONCURRENT) return;
       activeCount++;
       spawnOne(() => {
         activeCount--;
         if (mounted) {
-          // Random quiet gap before respawning (2–7 s)
           const delay = 2000 + Math.random() * 5000;
           setTimeout(() => trySpawn(), delay);
         }
       });
     }
 
-    // Stagger the initial two crawlers
     const t1 = setTimeout(() => trySpawn(), 600);
     const t2 = setTimeout(() => trySpawn(), 3200);
 
@@ -236,10 +314,9 @@ export default function GridEater() {
       clearTimeout(t2);
       rafMap.forEach(h => cancelAnimationFrame(h));
       rafMap.clear();
-      // Clear all crawlers on unmount
       setCrawlers([]);
     };
-  }, []);   // ← empty deps: runs once, client-only, no SSR
+  }, []);
 
   return (
     <div
@@ -247,12 +324,9 @@ export default function GridEater() {
       className="absolute inset-0 pointer-events-none overflow-hidden"
       style={{ zIndex: 1 }}
     >
-      {/* Gap masks — erases the CSS grid line over the eaten segment */}
       {crawlers.map(c =>
         c.gap ? <GridGap key={`gap-${c.id}`} gap={c.gap} row={c.row} /> : null
       )}
-
-      {/* Character videos */}
       {crawlers.map(c => (
         <Crawler key={c.id} state={c} isDark={isDark} />
       ))}

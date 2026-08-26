@@ -10,7 +10,7 @@ export interface ResultActionsProps {
 }
 
 const baseAction =
-  "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.06em] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(97,95,255,0.35)]";
+  "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.06em] transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,111,75,0.35)]";
 
 /** Contextual next-step actions beneath the result. Only implemented actions
     are interactive; unimplemented ones follow the existing "Soon" convention. */

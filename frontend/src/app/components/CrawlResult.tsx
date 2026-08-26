@@ -53,7 +53,7 @@ export default function CrawlResult({
                   onClick={() => onSelectPage(index)}
                   className={`w-full border-l-2 p-3 text-left text-xs transition ${
                     selectedPage === index
-                      ? "border-[var(--color-electric-indigo)] bg-[rgba(97,95,255,0.08)] text-[var(--color-charcoal)]"
+                      ? "border-[var(--color-electric-indigo)] bg-[rgba(142,111,75,0.08)] text-[var(--color-charcoal)]"
                       : "border-transparent text-[var(--color-bark-grey)] hover:bg-[var(--color-warm-bone)]"
                   }`}
                 >
@@ -104,7 +104,7 @@ export default function CrawlResult({
                 </div>
               </div>
               <h3 className="mb-2 text-sm font-bold text-[var(--color-charcoal)]">{active.title}</h3>
-              <pre className="whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(97,95,255,0.18)]">
+              <pre className="whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-[var(--color-charcoal)] selection:bg-[rgba(142,111,75,0.18)]">
                 {active.markdown}
               </pre>
             </>

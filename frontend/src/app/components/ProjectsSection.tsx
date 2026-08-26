@@ -60,7 +60,7 @@ export default function ProjectsSection() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="w-full rounded-[12px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] px-4 py-3.5 flex items-center justify-between text-left text-[14px] font-semibold text-[var(--color-charcoal)] hover:border-[var(--color-electric-indigo)] transition duration-200 cursor-pointer"
-              style={{ outline: isOpen ? '3px solid rgba(97,95,255,0.15)' : 'none', borderColor: isOpen ? '#615fff' : undefined }}
+              style={{ outline: isOpen ? '3px solid rgba(142,111,75,0.15)' : 'none', borderColor: isOpen ? '#8e6f4b' : undefined }}
             >
               <div className="flex items-center gap-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-electric-indigo)]" />

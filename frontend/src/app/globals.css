@@ -1,38 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand palette — light */
-  --color-warm-bone: #fafaf9;
-  --color-paper-white: #ffffff;
-  --color-stone-mist: #e7e5e4;
-  --color-bark-grey: #79716b;
-  --color-charcoal: #292524;
-  --color-obsidian: #0c0a09;
-  --color-pebble: #a6a09b;
-  --color-electric-indigo: #615fff;
-  --color-deep-violet: #4f39f6;
-  --color-terracotta: #d97757;
-  --color-lichen-green: #5ea500;
-  --color-tide-teal: #22b8cd;
-  --color-alarm-red: #ff0000;
-  --color-sapphire-link: #007ebb;
+  /* Brand palette — light (warm editorial ivory + bronze) */
+  --color-warm-bone: #f5f0e8;
+  --color-paper-white: #fdfbf6;
+  --color-stone-mist: #e0d8c9;
+  --color-bark-grey: #7c6e5b;
+  --color-charcoal: #2b2520;
+  --color-obsidian: #141007;
+  --color-pebble: #b3a78f;
+  --color-electric-indigo: #8e6f4b;
+  --color-deep-violet: #745b3c;
+  --color-terracotta: #c0764f;
+  --color-lichen-green: #7c8b57;
+  --color-tide-teal: #5f8377;
+  --color-alarm-red: #c1503f;
+  --color-sapphire-link: #a3753b;
 
   /* Semantic tokens — light */
-  --color-background: #fafaf9;
-  --color-surface: #ffffff;
-  --color-surface-elevated: #ffffff;
-  --color-surface-hover: #f6f4f1;
-  --color-surface-glass: rgba(255, 255, 255, 0.72);
-  --color-header-glass: rgba(250, 250, 249, 0.8);
-  --color-border: #e7e5e4;
-  --color-grid-line: rgba(121, 113, 107, 0.07);
-  --color-foreground: #292524;
-  --color-foreground-secondary: #79716b;
-  --color-foreground-muted: #a6a09b;
-  --color-accent: #615fff;
-  --color-success: #5ea500;
-  --color-warning: #d97757;
-  --color-danger: #d12320;
+  --color-background: #f5f0e8;
+  --color-surface: #fdfbf6;
+  --color-surface-elevated: #fffdf8;
+  --color-surface-hover: #f1ebdd;
+  --color-surface-glass: rgba(253, 251, 246, 0.78);
+  --color-header-glass: rgba(245, 240, 232, 0.82);
+  --color-border: #e0d8c9;
+  --color-grid-line: rgba(130, 116, 96, 0.08);
+  --color-foreground: #2b2520;
+  --color-foreground-secondary: #7a6c5b;
+  --color-foreground-muted: #a4947c;
+  --color-accent: #8e6f4b;
+  --color-success: #7b8a54;
+  --color-warning: #c0764f;
+  --color-danger: #c14b3c;
 
   --font-geist: var(--font-geist-sans), "Geist", "Segoe UI", sans-serif;
   --font-cooper-ltbt: var(--font-cooper-ltbt), Georgia, serif;
@@ -42,38 +42,38 @@
   color-scheme: light;
 }
 
-/* Brand palette + semantic tokens — dark (intentionally designed, warm near-black). */
+/* Brand palette + semantic tokens — dark (warm espresso near-black, bronze accent). */
 .dark {
-  --color-warm-bone: #0e0d0b;
-  --color-paper-white: #171512;
-  --color-stone-mist: #2a2622;
-  --color-bark-grey: #b3aca4;
-  --color-charcoal: #f2f0ed;
-  --color-obsidian: #080706;
-  --color-pebble: #7a746c;
-  --color-electric-indigo: #7c7aff;
-  --color-deep-violet: #6b5bff;
-  --color-terracotta: #e08a66;
-  --color-lichen-green: #7cc419;
-  --color-tide-teal: #37c4d8;
-  --color-alarm-red: #ff5a50;
-  --color-sapphire-link: #4db6e8;
+  --color-warm-bone: #17130d;
+  --color-paper-white: #211c15;
+  --color-stone-mist: #3a3226;
+  --color-bark-grey: #c6b6a1;
+  --color-charcoal: #f4eee3;
+  --color-obsidian: #0d0a07;
+  --color-pebble: #9b8e75;
+  --color-electric-indigo: #c9a26c;
+  --color-deep-violet: #a87944;
+  --color-terracotta: #d5915b;
+  --color-lichen-green: #9aaa68;
+  --color-tide-teal: #84a396;
+  --color-alarm-red: #e66b57;
+  --color-sapphire-link: #d9ac5f;
 
-  --color-background: #0e0d0b;
-  --color-surface: #171512;
-  --color-surface-elevated: #1d1a17;
-  --color-surface-hover: #211e1a;
-  --color-surface-glass: rgba(29, 26, 23, 0.6);
-  --color-header-glass: rgba(14, 13, 11, 0.72);
-  --color-border: #2a2622;
-  --color-grid-line: rgba(242, 240, 237, 0.05);
-  --color-foreground: #f2f0ed;
-  --color-foreground-secondary: #b3aca4;
-  --color-foreground-muted: #7a746c;
-  --color-accent: #7c7aff;
-  --color-success: #7cc419;
-  --color-warning: #e08a66;
-  --color-danger: #ff5a50;
+  --color-background: #17130d;
+  --color-surface: #211c15;
+  --color-surface-elevated: #2a241a;
+  --color-surface-hover: #2e281d;
+  --color-surface-glass: rgba(33, 28, 21, 0.68);
+  --color-header-glass: rgba(23, 19, 13, 0.76);
+  --color-border: #3a3226;
+  --color-grid-line: rgba(244, 238, 227, 0.06);
+  --color-foreground: #f4eee3;
+  --color-foreground-secondary: #c6b6a1;
+  --color-foreground-muted: #9b8e75;
+  --color-accent: #c9a26c;
+  --color-success: #98a766;
+  --color-warning: #d3905c;
+  --color-danger: #d95a48;
 
   color-scheme: dark;
 }
@@ -130,7 +130,7 @@ body {
 }
 
 ::selection {
-  background: rgba(97, 95, 255, 0.18);
+  background: rgba(142, 111, 75, 0.18);
 }
 
 * {
