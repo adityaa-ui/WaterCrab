@@ -553,14 +553,14 @@ export default function PipelineTool({ initialUrl, bare = false, initialMode = "
                 <label className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--color-charcoal)]">
                   Job Mode
                 </label>
-                <div className="grid grid-cols-5 gap-1 rounded-xl bg-[var(--color-warm-bone)] p-1">
+                <div className="grid grid-cols-5 gap-1 rounded-xl bg-[var(--color-warm-bone)] p-1 min-w-0 overflow-x-auto">
                   {(["search", "scrape", "map", "crawl", "leadgen"] as const).map((m) => (
                     <button
                       key={m}
                       type="button"
                       disabled={structuredExtract}
                       onClick={() => setMode(m)}
-                      className={`rounded-lg py-2 text-[10px] font-semibold uppercase tracking-[0.04em] transition ${
+                      className={`shrink-0 rounded-lg py-2 px-1 text-[10px] font-semibold uppercase tracking-[0.04em] transition ${
                         mode === m && !structuredExtract
                           ? "bg-[var(--color-electric-indigo)] text-white shadow-sm"
                           : "text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] disabled:opacity-30"

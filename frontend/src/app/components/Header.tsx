@@ -1,8 +1,29 @@
 "use client";
 import React, { useState } from 'react';
 import { ThemeToggle } from '@/lib/theme';
+import {
+  IconChevronDown,
+  IconSparkles,
+  IconArrowRight,
+  IconBrowser,
+  IconBracketsContain,
+  IconRoute,
+  IconRocket,
+  IconFileCode,
+  IconPackages
+} from "@tabler/icons-react";
 
-export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onLogin: () => void; onSignUp: () => void; userEmail?: string; onLogout: () => void }) {
+export default function Header({ 
+  onLogin, 
+  onSignUp, 
+  userEmail, 
+  onLogout 
+}: { 
+  onLogin: () => void; 
+  onSignUp: () => void; 
+  userEmail?: string; 
+  onLogout: () => void 
+}) {
   const [openDropdown, setOpenDropdown] = useState<'solutions' | 'docs' | null>(null);
 
   const toggleDropdown = (menu: 'solutions' | 'docs') => {
@@ -10,146 +31,190 @@ export default function Header({ onLogin, onSignUp, userEmail, onLogout }: { onL
   };
 
   return (
-    <>
-      {/* Sticky Nav Bar: Stays completely flat, no border, no shadow, no background change */}
-      <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-header-glass)] backdrop-blur-md w-full">
-        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4 relative">
+    <header className="sticky top-4 z-50 mx-auto w-full max-w-[1040px] px-4">
+      <div className="family-capsule flex items-center justify-between px-5 py-2.5 transition-all duration-300">
+        
+        {/* Left Branding - Family.co style Squircle Icon */}
+        <a href="/" className="flex items-center gap-2.5 group">
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-[#FF6B4A] via-[#FF5C38] to-[#E04826] text-white shadow-sm transition-transform duration-300 group-hover:scale-105">
+            {/* Playful crab claw / geometric monogram */}
+            <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3a9 9 0 0 0-9 9c0 4.97 4.03 9 9 9s9-4.03 9-9a9 9 0 0 0-9-9zm-1 5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm4 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm-7 8a4 4 0 0 1 8 0H8z" />
+            </svg>
+          </div>
+          <span className="text-[15px] font-bold tracking-tight text-[var(--color-charcoal)]">
+            WaterCrab
+          </span>
+        </a>
+
+        {/* Center Nav - Family.co clean pill links */}
+        <nav className="hidden items-center gap-1 text-[13px] font-medium text-[var(--color-bark-grey)] md:flex">
+          {/* Solutions Dropdown */}
+          <div 
+            className="relative"
+            onMouseEnter={() => setOpenDropdown('solutions')}
+            onMouseLeave={() => setOpenDropdown(null)}
+          >
+            <button 
+              onClick={() => toggleDropdown('solutions')}
+              className="flex items-center gap-1 rounded-full px-3.5 py-1.5 transition hover:bg-[var(--color-ivory)] hover:text-[var(--color-charcoal)] cursor-pointer"
+            >
+              <span>Features</span>
+              <IconChevronDown 
+                className={`h-3.5 w-3.5 opacity-60 transition-transform duration-200 ${openDropdown === 'solutions' ? 'rotate-180 opacity-100' : ''}`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            <div 
+              className={`absolute top-full left-0 mt-2 w-[320px] rounded-[24px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-3 shadow-xl z-50 transition-all duration-200 ease-out ${
+                openDropdown === 'solutions'
+                  ? 'opacity-100 translate-y-0 pointer-events-auto'
+                  : 'opacity-0 translate-y-2 pointer-events-none'
+              }`}
+            >
+              <div className="space-y-1">
+                <a href="#pipeline" className="flex items-start gap-3 rounded-[16px] p-2.5 transition-colors hover:bg-[var(--color-ivory)] group">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#FF5C38] dark:bg-orange-950/40">
+                    <IconBrowser className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--color-charcoal)]">Web Scraper</div>
+                    <div className="text-[11px] text-[var(--color-bark-grey)]">Clean Markdown with 0 ads or noise.</div>
+                  </div>
+                </a>
+
+                <a href="#pipeline" className="flex items-start gap-3 rounded-[16px] p-2.5 transition-colors hover:bg-[var(--color-ivory)] group">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-[#5B5BD6] dark:bg-indigo-950/40">
+                    <IconBracketsContain className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--color-charcoal)]">Schema Extractor</div>
+                    <div className="text-[11px] text-[var(--color-bark-grey)]">Strict JSON objects using OpenAI/Claude.</div>
+                  </div>
+                </a>
+
+                <a href="#pipeline" className="flex items-start gap-3 rounded-[16px] p-2.5 transition-colors hover:bg-[var(--color-ivory)] group">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-[#10B981] dark:bg-emerald-950/40">
+                    <IconRoute className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--color-charcoal)]">Multi-Page Crawler</div>
+                    <div className="text-[11px] text-[var(--color-bark-grey)]">Distributed BullMQ & Playwright clusters.</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <a href="#values" className="rounded-full px-3.5 py-1.5 transition hover:bg-[var(--color-ivory)] hover:text-[var(--color-charcoal)]">
+            Values
+          </a>
+
+          <a href="#features" className="rounded-full px-3.5 py-1.5 transition hover:bg-[var(--color-ivory)] hover:text-[var(--color-charcoal)]">
+            Architecture
+          </a>
+
+          <a href="#integrations" className="rounded-full px-3.5 py-1.5 transition hover:bg-[var(--color-ivory)] hover:text-[var(--color-charcoal)]">
+            Agents
+          </a>
+
+          {/* Docs Dropdown */}
+          <div 
+            className="relative"
+            onMouseEnter={() => setOpenDropdown('docs')}
+            onMouseLeave={() => setOpenDropdown(null)}
+          >
+            <button 
+              onClick={() => toggleDropdown('docs')}
+              className="flex items-center gap-1 rounded-full px-3.5 py-1.5 transition hover:bg-[var(--color-ivory)] hover:text-[var(--color-charcoal)] cursor-pointer"
+            >
+              <span>Docs</span>
+              <IconChevronDown 
+                className={`h-3.5 w-3.5 opacity-60 transition-transform duration-200 ${openDropdown === 'docs' ? 'rotate-180 opacity-100' : ''}`}
+              />
+            </button>
+
+            <div 
+              className={`absolute top-full left-0 mt-2 w-[300px] rounded-[24px] border border-[var(--color-stone-mist)] bg-[var(--color-paper-white)] p-3 shadow-xl z-50 transition-all duration-200 ease-out ${
+                openDropdown === 'docs'
+                  ? 'opacity-100 translate-y-0 pointer-events-auto'
+                  : 'opacity-0 translate-y-2 pointer-events-none'
+              }`}
+            >
+              <div className="space-y-1">
+                <a href="#pipeline" className="flex items-start gap-3 rounded-[16px] p-2.5 transition-colors hover:bg-[var(--color-ivory)]">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#FF5C38] dark:bg-orange-950/40">
+                    <IconRocket className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--color-charcoal)]">Quickstart Guide</div>
+                    <div className="text-[11px] text-[var(--color-bark-grey)]">Install SDK or call REST endpoint.</div>
+                  </div>
+                </a>
+
+                <a href="#features" className="flex items-start gap-3 rounded-[16px] p-2.5 transition-colors hover:bg-[var(--color-ivory)]">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-500 dark:bg-blue-950/40">
+                    <IconFileCode className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--color-charcoal)]">API Reference</div>
+                    <div className="text-[11px] text-[var(--color-bark-grey)]">Full parameters and return shapes.</div>
+                  </div>
+                </a>
+
+                <a href="#integrations" className="flex items-start gap-3 rounded-[16px] p-2.5 transition-colors hover:bg-[var(--color-ivory)]">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-500 dark:bg-purple-950/40">
+                    <IconPackages className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[var(--color-charcoal)]">Libraries & MCP</div>
+                    <div className="text-[11px] text-[var(--color-bark-grey)]">TypeScript, Python, and Claude MCP.</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Right Action Buttons */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle className="inline-flex" />
           
-          {/* Left branding */}
-          <div className="flex items-center gap-2">
-            {/* Geometric Club Suit Logomark */}
-            <div className="text-[var(--color-electric-indigo)]">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <circle cx="12" cy="7.5" r="3" />
-                <circle cx="7.5" cy="13.5" r="3" />
-                <circle cx="16.5" cy="13.5" r="3" />
-                <path d="M12 12v7.5a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5V12h2z" />
-              </svg>
-            </div>
-            <span className="font-mono text-sm font-semibold uppercase tracking-[0.10em] text-[var(--color-charcoal)]">
-              WATERCRAB
-            </span>
-          </div>
-
-          {/* Center Navigation links */}
-          <nav className="hidden items-center gap-8 text-[13px] font-semibold uppercase tracking-[0.04em] text-[var(--color-bark-grey)] md:flex">
-            
-            {/* Solutions Dropdown */}
-            <div 
-              className="relative py-2"
-              onMouseEnter={() => setOpenDropdown('solutions')}
-              onMouseLeave={() => setOpenDropdown(null)}
-            >
+          {userEmail ? (
+            <div className="flex items-center gap-2">
+              <a 
+                href="/workspace" 
+                className="hidden rounded-full bg-[var(--color-ivory)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-charcoal)] hover:bg-[var(--color-surface-hover)] md:block"
+              >
+                Workspace
+              </a>
               <button 
-                onClick={() => toggleDropdown('solutions')}
-                className="flex items-center gap-1 transition hover:text-[var(--color-charcoal)] cursor-pointer"
+                onClick={onLogout} 
+                className="rounded-full border border-[var(--color-stone-mist)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] cursor-pointer"
               >
-                Solutions
-                <svg 
-                  className={`h-3 w-3 opacity-60 transition-transform duration-150 ${openDropdown === 'solutions' ? 'rotate-180' : ''}`}
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor" 
-                  strokeWidth="2.5"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
+                Log out
               </button>
-
-              <div 
-                className={`absolute top-full left-0 mt-1 w-[320px] rounded-[12px] border border-stone-mist bg-paper-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-50 transition-all duration-200 ease-out ${
-                  openDropdown === 'solutions'
-                    ? 'opacity-100 translate-y-0 pointer-events-auto'
-                    : 'opacity-0 translate-y-2 pointer-events-none'
-                }`}
-              >
-                <div className="space-y-4">
-                  <div>
-                    <a href="#pipeline" className="block group">
-                      <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">Web Scraper</div>
-                      <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Extract content from any URL as clean Markdown.</div>
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#pipeline" className="block group">
-                      <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">AI Extraction API</div>
-                      <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Get structured JSON from web pages using schemas.</div>
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#pipeline" className="block group">
-                      <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">Crawl Pipelines</div>
-                      <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Schedule and run large-scale crawling agents.</div>
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            <a href="#features" className="transition hover:text-[var(--color-charcoal)]">Agents</a>
-            <a href="#pipeline" className="transition hover:text-[var(--color-charcoal)]">Pricing</a>
-
-            {/* Docs Dropdown */}
-            <div 
-              className="relative py-2"
-              onMouseEnter={() => setOpenDropdown('docs')}
-              onMouseLeave={() => setOpenDropdown(null)}
-            >
+          ) : (
+            <div className="flex items-center gap-2">
               <button 
-                onClick={() => toggleDropdown('docs')}
-                className="flex items-center gap-1 transition hover:text-[var(--color-charcoal)] cursor-pointer"
+                onClick={onLogin} 
+                className="rounded-full px-3.5 py-1.5 text-xs font-semibold text-[var(--color-bark-grey)] hover:text-[var(--color-charcoal)] cursor-pointer"
               >
-                Docs
-                <svg 
-                  className={`h-3 w-3 opacity-60 transition-transform duration-150 ${openDropdown === 'docs' ? 'rotate-180' : ''}`}
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor" 
-                  strokeWidth="2.5"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
+                Log in
               </button>
-
-              <div 
-                className={`absolute top-full left-0 mt-1 w-[320px] rounded-[12px] border border-stone-mist bg-paper-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-50 transition-all duration-200 ease-out ${
-                  openDropdown === 'docs'
-                    ? 'opacity-100 translate-y-0 pointer-events-auto'
-                    : 'opacity-0 translate-y-2 pointer-events-none'
-                }`}
+              <button 
+                onClick={onSignUp} 
+                className="group flex items-center gap-1.5 rounded-full bg-[var(--color-charcoal)] px-4 py-1.5 text-xs font-semibold text-[var(--color-warm-bone)] shadow-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
               >
-                <div className="space-y-4">
-                  <div>
-                    <a href="#pipeline" className="block group">
-                      <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">Quick Start</div>
-                      <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Get started with WaterCrab API keys in 2 minutes.</div>
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#features" className="block group">
-                      <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">API Reference</div>
-                      <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">Scraping, crawling, and extraction endpoints.</div>
-                    </a>
-                  </div>
-                  <div>
-                    <a href="#integrations" className="block group">
-                      <div className="text-[11px] font-mono text-[var(--color-charcoal)] group-hover:text-[var(--color-electric-indigo)] transition uppercase tracking-[0.04em]">SDK Libraries</div>
-                      <div className="text-[11px] font-normal text-[var(--color-bark-grey)] capitalize mt-0.5">TypeScript, Python, and Go developer libraries.</div>
-                    </a>
-                  </div>
-                </div>
-              </div>
+                <span>Get Started</span>
+                <IconArrowRight className="h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </button>
             </div>
-
-          </nav>
-
-          {/* Right buttons */}
-          <div className="flex items-center gap-3">
-            <ThemeToggle className="hidden sm:inline-flex" />
-            {userEmail ? <><a href="/workspace" className="hidden text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--color-charcoal)] hover:opacity-75 md:block">Workspace</a><span className="hidden max-w-32 truncate text-xs text-[var(--color-bark-grey)] md:block">{userEmail}</span><button onClick={onLogout} className="rounded-[8px] border border-[var(--color-stone-mist)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.04em] hover:border-[var(--color-electric-indigo)]">Log out</button></> : <><button onClick={onLogin} className="text-[12px] font-semibold uppercase tracking-[0.04em] text-[var(--color-charcoal)] hover:opacity-75 transition cursor-pointer">Log in</button><button onClick={onSignUp} className="rounded-[8px] bg-[var(--color-electric-indigo)] px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.04em] text-white shadow-sm transition hover:bg-[var(--color-deep-violet)] cursor-pointer">Sign up</button></>}
-          </div>
+          )}
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 }

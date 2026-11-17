@@ -1,4 +1,26 @@
 services:
+  # 0. WaterCrab Frontend (Next.js SSR)
+  - type: web
+    name: watercrab-frontend
+    runtime: node
+    rootDir: ./frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      # Public Firebase config — safe to expose; set values in the Render dashboard
+      - key: NEXT_PUBLIC_FIREBASE_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_APP_ID
+        sync: false
+      # Points the pipeline tool at the deployed API (baked in at build time)
+      - key: NEXT_PUBLIC_API_URL
+        value: https://watercrab-1.onrender.com
+
   # 1. Browser Rendering Service
   - type: web
     name: watercrab-browser

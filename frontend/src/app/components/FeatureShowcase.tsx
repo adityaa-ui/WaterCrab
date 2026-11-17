@@ -396,8 +396,8 @@ export default function FeatureShowcase() {
             <span className="text-[var(--color-pebble)]">{'// STRUCTURED SCRAPING'}</span>
           </div>
 
-          <h2 className="display-serif text-3xl font-bold leading-tight text-[var(--color-charcoal)] md:text-4xl">
-            From raw DOM to <span className="font-serif italic font-normal text-[var(--color-electric-indigo)]">clean code.</span>
+          <h2 className="display-serif text-3xl font-normal leading-tight text-[var(--color-charcoal)] md:text-4xl">
+            From raw DOM to <span className="font-serif italic font-normal text-[var(--color-gold)]">clean code.</span>
           </h2>
 
           <div className="space-y-3">
@@ -417,7 +417,7 @@ export default function FeatureShowcase() {
                     <h3 className={`text-xs font-semibold tracking-[0.06em] font-mono ${isActive ? 'text-[var(--color-charcoal)]' : 'text-[var(--color-bark-grey)]'}`}>
                       {item.title}
                     </h3>
-                    <span className={`text-xs transition-transform duration-200 ${isActive ? 'rotate-90 text-[var(--color-electric-indigo)]' : 'text-[var(--color-pebble)]'}`}>
+                    <span className={`text-xs transition-transform duration-200 ${isActive ? 'rotate-90 text-[var(--color-gold)]' : 'text-[var(--color-pebble)]'}`}>
                       →
                     </span>
                   </div>
@@ -445,7 +445,7 @@ export default function FeatureShowcase() {
                   onClick={() => setSec1Lang(lang)}
                   className={`rounded px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] transition ${
                     sec1Lang === lang 
-                      ? 'bg-[var(--color-electric-indigo)] text-white shadow' 
+                      ? 'bg-[var(--color-gold)] text-[var(--color-obsidian)] font-bold shadow' 
                       : 'text-neutral-400 hover:text-white hover:bg-[#1a1a1e]'
                   }`}
                 >
@@ -485,8 +485,8 @@ export default function FeatureShowcase() {
             <span className="text-[var(--color-pebble)]">{'// CRAWL PIPELINES'}</span>
           </div>
 
-          <h2 className="display-serif text-3xl font-bold leading-tight text-[var(--color-charcoal)] md:text-4xl">
-            Orchestrate crawls at <span className="font-serif italic font-normal text-[var(--color-electric-indigo)]">any scale.</span>
+          <h2 className="display-serif text-3xl font-normal leading-tight text-[var(--color-charcoal)] md:text-4xl">
+            Orchestrate crawls at <span className="font-serif italic font-normal text-[var(--color-gold)]">any scale.</span>
           </h2>
 
           <div className="space-y-3">
@@ -506,7 +506,7 @@ export default function FeatureShowcase() {
                     <h3 className={`text-xs font-semibold tracking-[0.06em] font-mono ${isActive ? 'text-[var(--color-charcoal)]' : 'text-[var(--color-bark-grey)]'}`}>
                       {item.title}
                     </h3>
-                    <span className={`text-xs transition-transform duration-200 ${isActive ? 'rotate-90 text-[var(--color-electric-indigo)]' : 'text-[var(--color-pebble)]'}`}>
+                    <span className={`text-xs transition-transform duration-200 ${isActive ? 'rotate-90 text-[var(--color-gold)]' : 'text-[var(--color-pebble)]'}`}>
                       →
                     </span>
                   </div>
@@ -527,7 +527,7 @@ export default function FeatureShowcase() {
             {/* Widget Header */}
             <div className="flex items-center justify-between border-b border-[var(--color-stone-mist)] pb-4 mb-4">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[var(--color-electric-indigo)] animate-ping" />
+                <span className="h-2 w-2 rounded-full bg-[var(--color-gold)] animate-ping" />
                 <span className="text-xs font-mono font-semibold text-[var(--color-charcoal)]">CRAWLER_DAEMON (PID 8820)</span>
               </div>
               <span className="rounded bg-[var(--color-warm-bone)] px-2 py-0.5 font-mono text-[9px] text-[var(--color-bark-grey)]">ACTIVE</span>
@@ -540,12 +540,12 @@ export default function FeatureShowcase() {
                   {sec2Data.widgetState.pages.map((p) => (
                     <div key={p.url} className="flex items-center justify-between rounded-lg border border-[var(--color-stone-mist)] bg-[var(--color-warm-bone)] px-4 py-2 text-xs">
                       <div className="flex items-center gap-2">
-                        <span className={`h-1.5 w-1.5 rounded-full ${p.status === 'completed' ? 'bg-green-500' : p.status === 'active' ? 'bg-[var(--color-electric-indigo)] animate-pulse' : 'bg-zinc-300'}`} />
+                        <span className={`h-1.5 w-1.5 rounded-full ${p.status === 'completed' ? 'bg-[#6C7A58]' : p.status === 'active' ? 'bg-[var(--color-gold)] animate-pulse' : 'bg-zinc-300'}`} />
                         <span className="font-mono text-[11px] text-[var(--color-charcoal)]">{p.url}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-[10px] text-[var(--color-pebble)]">{p.size}</span>
-                        <span className={`text-[9px] font-bold uppercase tracking-[0.04em] ${p.status === 'completed' ? 'text-green-600' : p.status === 'active' ? 'text-[var(--color-electric-indigo)]' : 'text-zinc-400'}`}>
+                        <span className={`text-[9px] font-bold uppercase tracking-[0.04em] ${p.status === 'completed' ? 'text-[#6C7A58]' : p.status === 'active' ? 'text-[var(--color-gold)]' : 'text-zinc-400'}`}>
                           {p.status}
                         </span>
                       </div>
@@ -607,8 +607,8 @@ export default function FeatureShowcase() {
             <span className="text-[var(--color-pebble)]">{'// AI EXTRACTION'}</span>
           </div>
 
-          <h2 className="display-serif text-3xl font-bold leading-tight text-[var(--color-charcoal)] md:text-4xl">
-            Supercharged structured <span className="font-serif italic font-normal text-[var(--color-electric-indigo)]">outputs.</span>
+          <h2 className="display-serif text-3xl font-normal leading-tight text-[var(--color-charcoal)] md:text-4xl">
+            Supercharged structured <span className="font-serif italic font-normal text-[var(--color-gold)]">outputs.</span>
           </h2>
 
           <div className="space-y-3">
@@ -628,7 +628,7 @@ export default function FeatureShowcase() {
                     <h3 className={`text-xs font-semibold tracking-[0.06em] font-mono ${isActive ? 'text-[var(--color-charcoal)]' : 'text-[var(--color-bark-grey)]'}`}>
                       {item.title}
                     </h3>
-                    <span className={`text-xs transition-transform duration-200 ${isActive ? 'rotate-90 text-[var(--color-electric-indigo)]' : 'text-[var(--color-pebble)]'}`}>
+                    <span className={`text-xs transition-transform duration-200 ${isActive ? 'rotate-90 text-[var(--color-gold)]' : 'text-[var(--color-pebble)]'}`}>
                       →
                     </span>
                   </div>
@@ -655,17 +655,17 @@ export default function FeatureShowcase() {
                   {/* Node block */}
                   <div className={`w-[240px] rounded-xl border p-3 flex items-center justify-between bg-[var(--color-paper-white)] transition-all duration-300 ${
                     node.status === 'completed' 
-                      ? 'border-green-300 shadow-sm' 
+                      ? 'border-[#6C7A58] shadow-sm' 
                       : node.status === 'active' 
-                      ? 'border-[var(--color-electric-indigo)] ring-2 ring-[rgba(142,111,75,0.15)] shadow-md' 
+                      ? 'border-[var(--color-gold)] ring-2 ring-[rgba(191,161,117,0.2)] shadow-md' 
                       : 'border-[var(--color-stone-mist)] opacity-60'
                   }`}>
                     <div className="flex items-center gap-3">
                       <span className={`h-2.5 w-2.5 rounded-full ${
                         node.status === 'completed' 
-                          ? 'bg-green-500' 
+                          ? 'bg-[#6C7A58]' 
                           : node.status === 'active' 
-                          ? 'bg-[var(--color-electric-indigo)] animate-pulse' 
+                          ? 'bg-[var(--color-gold)] animate-pulse' 
                           : 'bg-zinc-300'
                       }`} />
                       <div className="text-left">

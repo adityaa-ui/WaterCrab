@@ -1,79 +1,106 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand palette — light (warm editorial ivory + bronze) */
-  --color-warm-bone: #f5f0e8;
-  --color-paper-white: #fdfbf6;
-  --color-stone-mist: #e0d8c9;
-  --color-bark-grey: #7c6e5b;
-  --color-charcoal: #2b2520;
-  --color-obsidian: #141007;
-  --color-pebble: #b3a78f;
-  --color-electric-indigo: #8e6f4b;
-  --color-deep-violet: #745b3c;
-  --color-terracotta: #c0764f;
-  --color-lichen-green: #7c8b57;
-  --color-tide-teal: #5f8377;
-  --color-alarm-red: #c1503f;
-  --color-sapphire-link: #a3753b;
+  /* Brand palette — FAMILY.CO Warm Tactile & Ambient Design System */
+  --color-warm-bone: #FBFBFA;       /* Family signature warm porcelain background */
+  --color-paper-white: #FFFFFF;     /* Pure crisp white card surface */
+  --color-ivory: #F4F4F2;           /* Soft ambient elevated container */
+  --color-stone-mist: #E8E8E5;      /* Subtle hairline border */
+  --color-stone: #8E8E93;           /* Muted secondary caption text */
+  --color-charcoal: #121214;        /* Deep ink black for titles and primary buttons */
+  --color-obsidian: #0A0A0C;        /* Pitch black */
+  --color-bark-grey: #6E6E73;       /* Family warm graphite body text */
+  --color-pebble: #A1A1A6;          /* Tertiary neutral */
+  
+  /* Family.co Signature Accents */
+  --color-coral: #FF5C38;           /* Family warm signature coral/peach */
+  --color-coral-soft: #FFF0EB;      /* Coral wash for pills and badges */
+  --color-amber: #F59E0B;           /* Warm amber */
+  --color-emerald: #10B981;         /* Fresh emerald green */
+  --color-emerald-soft: #ECFDF5;
+  --color-violet: #5B5BD6;          /* Family dynamic purple */
+  --color-violet-soft: #EEF2FF;
+  --color-gold: #FF5C38;            /* Aligned to Family accent */
+  --color-gold-hover: #E04826;
+  --color-gold-light: #FFF0EB;
+  --color-gold-border: rgba(255, 92, 56, 0.3);
+
+  /* Semantic Aliases mapped to Family */
+  --color-electric-indigo: #121214; 
+  --color-deep-violet: #0A0A0C;
+  --color-terracotta: #FF5C38;
+  --color-lichen-green: #10B981;
+  --color-tide-teal: #0D9488;
+  --color-alarm-red: #EF4444;
+  --color-sapphire-link: #5B5BD6;
 
   /* Semantic tokens — light */
-  --color-background: #f5f0e8;
-  --color-surface: #fdfbf6;
-  --color-surface-elevated: #fffdf8;
-  --color-surface-hover: #f1ebdd;
-  --color-surface-glass: rgba(253, 251, 246, 0.78);
-  --color-header-glass: rgba(245, 240, 232, 0.82);
-  --color-border: #e0d8c9;
-  --color-grid-line: rgba(130, 116, 96, 0.08);
-  --color-foreground: #2b2520;
-  --color-foreground-secondary: #7a6c5b;
-  --color-foreground-muted: #a4947c;
-  --color-accent: #8e6f4b;
-  --color-success: #7b8a54;
-  --color-warning: #c0764f;
-  --color-danger: #c14b3c;
+  --color-background: #FBFBFA;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F4F4F2;
+  --color-surface-hover: #EFEFEA;
+  --color-surface-glass: rgba(255, 255, 255, 0.85);
+  --color-header-glass: rgba(251, 251, 250, 0.85);
+  --color-border: #E8E8E5;
+  --color-border-subtle: rgba(232, 232, 229, 0.7);
+  --color-grid-line: rgba(18, 18, 20, 0.035);
+  --color-foreground: #121214;
+  --color-foreground-secondary: #6E6E73;
+  --color-foreground-muted: #8E8E93;
+  --color-accent: #121214;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
 
-  --font-geist: var(--font-geist-sans), "Geist", "Segoe UI", sans-serif;
-  --font-cooper-ltbt: var(--font-cooper-ltbt), Georgia, serif;
-  --font-geist-mono: var(--font-geist-mono), "Geist Mono", "SFMono-Regular", monospace;
+  --font-geist: var(--font-geist-sans), "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-cooper-ltbt: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-geist-mono: var(--font-geist-mono), "Geist Mono", "SFMono-Regular", Menlo, monospace;
   --font-datatype: var(--font-geist-mono), "dataType", monospace;
 
   color-scheme: light;
 }
 
-/* Brand palette + semantic tokens — dark (warm espresso near-black, bronze accent). */
+/* Brand palette + semantic tokens — dark (Family Night Mode: rich obsidian & neon-free warmth) */
 .dark {
-  --color-warm-bone: #17130d;
-  --color-paper-white: #211c15;
-  --color-stone-mist: #3a3226;
-  --color-bark-grey: #c6b6a1;
-  --color-charcoal: #f4eee3;
-  --color-obsidian: #0d0a07;
-  --color-pebble: #9b8e75;
-  --color-electric-indigo: #c9a26c;
-  --color-deep-violet: #a87944;
-  --color-terracotta: #d5915b;
-  --color-lichen-green: #9aaa68;
-  --color-tide-teal: #84a396;
-  --color-alarm-red: #e66b57;
-  --color-sapphire-link: #d9ac5f;
+  --color-warm-bone: #0D0D10;       /* Deep warm dark background */
+  --color-paper-white: #16161A;     /* Elevated dark card */
+  --color-ivory: #1E1E24;           /* Floating container */
+  --color-stone-mist: #26262D;      /* Delicate dark border */
+  --color-bark-grey: #A1A1A8;       /* Legible soft silver body */
+  --color-charcoal: #F5F5F7;        /* Crisp white text */
+  --color-obsidian: #08080A;
+  --color-pebble: #8E8E93;
+  --color-coral: #FF6E4D;
+  --color-coral-soft: rgba(255, 110, 77, 0.15);
+  --color-gold: #FF6E4D;
+  --color-gold-hover: #FF8569;
+  --color-gold-light: rgba(255, 110, 77, 0.12);
+  --color-gold-border: rgba(255, 110, 77, 0.35);
 
-  --color-background: #17130d;
-  --color-surface: #211c15;
-  --color-surface-elevated: #2a241a;
-  --color-surface-hover: #2e281d;
-  --color-surface-glass: rgba(33, 28, 21, 0.68);
-  --color-header-glass: rgba(23, 19, 13, 0.76);
-  --color-border: #3a3226;
-  --color-grid-line: rgba(244, 238, 227, 0.06);
-  --color-foreground: #f4eee3;
-  --color-foreground-secondary: #c6b6a1;
-  --color-foreground-muted: #9b8e75;
-  --color-accent: #c9a26c;
-  --color-success: #98a766;
-  --color-warning: #d3905c;
-  --color-danger: #d95a48;
+  --color-electric-indigo: #F5F5F7;
+  --color-deep-violet: #E5E5EA;
+  --color-terracotta: #FF6E4D;
+  --color-lichen-green: #34D399;
+  --color-tide-teal: #2DD4BF;
+  --color-alarm-red: #F87171;
+  --color-sapphire-link: #818CF8;
+
+  --color-background: #0D0D10;
+  --color-surface: #16161A;
+  --color-surface-elevated: #1E1E24;
+  --color-surface-hover: #26262D;
+  --color-surface-glass: rgba(22, 22, 26, 0.85);
+  --color-header-glass: rgba(13, 13, 16, 0.85);
+  --color-border: #26262D;
+  --color-border-subtle: rgba(38, 38, 45, 0.7);
+  --color-grid-line: rgba(245, 245, 247, 0.035);
+  --color-foreground: #F5F5F7;
+  --color-foreground-secondary: #A1A1A8;
+  --color-foreground-muted: #8E8E93;
+  --color-accent: #F5F5F7;
+  --color-success: #34D399;
+  --color-warning: #FBBF24;
+  --color-danger: #F87171;
 
   color-scheme: dark;
 }
@@ -81,11 +108,17 @@
 @theme inline {
   --color-warm-bone: var(--color-warm-bone);
   --color-paper-white: var(--color-paper-white);
+  --color-ivory: var(--color-ivory);
   --color-stone-mist: var(--color-stone-mist);
+  --color-stone: var(--color-stone);
   --color-bark-grey: var(--color-bark-grey);
   --color-charcoal: var(--color-charcoal);
   --color-obsidian: var(--color-obsidian);
   --color-pebble: var(--color-pebble);
+  --color-gold: var(--color-gold);
+  --color-gold-hover: var(--color-gold-hover);
+  --color-gold-light: var(--color-gold-light);
+  --color-gold-border: var(--color-gold-border);
   --color-electric-indigo: var(--color-electric-indigo);
   --color-deep-violet: var(--color-deep-violet);
   --color-terracotta: var(--color-terracotta);
@@ -101,6 +134,7 @@
   --color-surface-glass: var(--color-surface-glass);
   --color-header-glass: var(--color-header-glass);
   --color-border: var(--color-border);
+  --color-border-subtle: var(--color-border-subtle);
   --color-grid-line: var(--color-grid-line);
   --color-foreground: var(--color-foreground);
   --color-foreground-secondary: var(--color-foreground-secondary);
@@ -130,11 +164,202 @@ body {
 }
 
 ::selection {
-  background: rgba(142, 111, 75, 0.18);
+  background: rgba(255, 92, 56, 0.22);
+  color: inherit;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Family.co Signature UI System */
+.family-capsule {
+  border-radius: 9999px;
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.family-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background: var(--color-paper-white);
+  border: 1px solid var(--color-stone-mist);
+  box-shadow: 0 4px 20px -2px rgba(18, 18, 20, 0.03), 0 1px 3px rgba(18, 18, 20, 0.02);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.family-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(18, 18, 20, 0.15);
+  box-shadow: 0 16px 40px -8px rgba(18, 18, 20, 0.07), 0 4px 12px -2px rgba(18, 18, 20, 0.03);
+}
+
+.dark .family-card {
+  background: var(--color-paper-white);
+  border-color: var(--color-stone-mist);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+}
+
+.dark .family-card:hover {
+  border-color: rgba(245, 245, 247, 0.18);
+  box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.7);
+}
+
+.family-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-stone-mist);
+  background: var(--color-ivory);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-charcoal);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.family-pill:hover {
+  transform: scale(1.02);
+}
+
+.family-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.family-btn-primary {
+  background: var(--color-charcoal);
+  color: var(--color-warm-bone);
+  box-shadow: 0 4px 14px rgba(18, 18, 20, 0.12);
+}
+
+.family-btn-primary:hover {
+  transform: scale(1.025);
+  box-shadow: 0 6px 20px rgba(18, 18, 20, 0.18);
+}
+
+.family-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.family-btn-secondary {
+  border: 1px solid var(--color-stone-mist);
+  background: var(--color-paper-white);
+  color: var(--color-charcoal);
+}
+
+.family-btn-secondary:hover {
+  background: var(--color-surface-elevated);
+  transform: scale(1.025);
+}
+
+.family-btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* On-Screen Float & Spring Animations */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.75;
+  }
+}
+
+.animate-float {
+  animation: float-gentle 6s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 7s ease-in-out infinite;
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2.5s ease-in-out infinite;
+}
+
+/* Marble Elegance Signature Utilities (Preserved for compatibility) */
+.marble-card {
+  background: var(--color-paper-white);
+  border: 1px solid var(--color-stone-mist);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px -2px rgba(45, 45, 45, 0.04), 0 2px 6px -1px rgba(45, 45, 45, 0.02);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.marble-card:hover {
+  border-color: rgba(18, 18, 20, 0.15);
+  box-shadow: 0 12px 32px -4px rgba(45, 45, 45, 0.08), 0 4px 12px -2px rgba(45, 45, 45, 0.04);
+}
+
+.dark .marble-card {
+  background: var(--color-paper-white);
+  border: 1px solid var(--color-stone-mist);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.4);
+}
+
+.dark .marble-card:hover {
+  border-color: rgba(245, 245, 247, 0.18);
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.6);
+}
+
+.marble-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-stone-mist);
+  background: var(--color-ivory);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-charcoal);
+}
+
+.dark .marble-badge {
+  background: var(--color-ivory);
+  border-color: var(--color-stone-mist);
+  color: var(--color-charcoal);
+}
+
+.gold-accent {
+  color: var(--color-coral);
 }
 
 /* Smoothly transition colors during a user-initiated theme switch (only when
