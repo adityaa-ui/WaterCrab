@@ -1,4 +1,5 @@
 "use client";
+import { Analytics } from "@vercel/analytics/next";
 import React, { useEffect, useState } from 'react';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
@@ -48,6 +49,7 @@ export default function Home() {
         userEmail={userEmail ?? undefined} 
         onLogout={logout} 
       />
+      <Analytics />
 
       {/* Family-style Hero Banner */}
       <HeroSection onResultsChange={setShowSearchResults} />
